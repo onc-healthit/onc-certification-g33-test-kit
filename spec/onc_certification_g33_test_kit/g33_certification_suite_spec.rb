@@ -131,6 +131,8 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       end
     end
     let(:imported_ids) { short_ids(leaf_tests(suite, selected_options)) }
+    # Tests this suite defines itself, which cover requirements the PAS client suite has no test for
+    let(:locally_defined_ids) { ['g33_rest_hook_documentation_attestation'] }
 
     it 'imports every required SMART Backend Services test from the PAS client suite' do
       expect(expected_ids).to_not be_empty
@@ -138,7 +140,11 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     end
 
     it 'imports nothing the PAS client suite does not define for this client type' do
-      expect(imported_ids - expected_ids).to be_empty
+      expect(imported_ids - expected_ids - locally_defined_ids).to be_empty
+    end
+
+    it 'adds the locally defined tests to the imported groups' do
+      expect(locally_defined_ids - imported_ids).to be_empty
     end
   end
 
@@ -208,17 +214,26 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       expect(mapped_requirement_ids - verified).to be_empty
     end
 
-    # The Subscription update and delete API tests are pending, and (g)(33)(ii) is a documentation
-    # requirement with no test. Everything else is expected to be covered.
+    # The Subscription update and delete API tests are pending, so the requirements that only they
+    # would verify are the one remaining gap. Everything else is expected to be covered.
     it 'leaves only the known gaps unverified' do
       verified = suite.all_verified_requirements
       unverified = certification_requirement_ids - verified
 
       expect(unverified).to contain_exactly(
-        "#{ONCCertificationG33TestKit::G33Requirements::G33_SET}@9",
         "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
         "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
       )
+    end
+
+    # (g)(33)(ii) has no corresponding test in the PAS client or Subscriptions test kits, so this
+    # suite defines the attestation that covers it rather than mapping it onto an imported runnable.
+    it 'covers the REST-Hook documentation requirement with an attestation defined here' do
+      requirement_id = "#{ONCCertificationG33TestKit::G33Requirements::G33_SET}@9"
+      test = all_runnables.find { |runnable| runnable.id.to_s.end_with?('g33_rest_hook_documentation_attestation') }
+
+      expect(test.verifies_requirements).to include(requirement_id)
+      expect(ONCCertificationG33TestKit::G33Requirements::REQUIREMENT_MAP).to_not have_key(requirement_id)
     end
 
     # The certification requirements are added to the IG requirements each test already declares.

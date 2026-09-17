@@ -59,7 +59,8 @@ module ONCCertificationG33TestKit
         'pas_client_v221_pended_group'
       ],
       # 170.315(g)(33)(ii) is a documentation requirement on the client's REST-Hook notification
-      # endpoint. It is not verified by any test in this suite and needs an attestation test.
+      # endpoint. No imported runnable demonstrates it, so it is verified by this suite's own
+      # RestHookDocumentationAttestationTest, which declares it directly.
 
       # 170.315(j)(21): subscriptions as a client per the Subscriptions R5 Backport IG
       "#{J21_SET}@1" => [
