@@ -42,16 +42,27 @@ module ONCCertificationG33TestKit
       # 170.315(g)(33)(i)(C)(1): the "EHR PAS Capabilities" CapabilityStatement, which requires the
       # Claim $submit and $inquire operations and the Subscription create, update, and delete
       # interactions. Update and delete are not yet exercised - see 170.315(j)(21)@6 and @7.
+      #
+      # Tagged on the groups rather than on the individual interaction tests: those tests only let
+      # Inferno receive a request, and it is the surrounding group that checks the request conforms.
       "#{G33_SET}@6" => [
+        'g33_pas_client_v221_subscription_setup',
         'g33_pas_client_v221_workflows',
-        'pas_client_v221_subscription_create_test',
-        'pas_client_v221_inquire_request_bundle_validation_test',
-        'pas_client_v221_inquire_must_support'
+        'g33_pas_client_v221_must_support'
       ],
       # 170.315(g)(33)(i)(C)(2): "Support the ability to consume and process a 'ClaimResponse.'"
+      #
+      # Consuming a ClaimResponse is only observable to the tester, so this is tagged on the
+      # attestations that the response reached the user, across every workflow that returns one,
+      # and on the attestations that its must support elements were handled.
       "#{G33_SET}@7" => [
-        'pas_client_v221_submit_response_must_support-pas_client_v221_submit_response_must_support_claimresponse',
-        'pas_client_v221_submit_response_must_support-pas_client_v221_response_attest'
+        'pas_client_v221_approval_group-pas_client_v221_response_attest',
+        'pas_client_v221_denial_group-pas_client_v221_response_attest',
+        'pas_client_v221_pended_group-Group02-pas_client_v221_response_attest',
+        'pas_client_v221_pended_group-Group03-pas_client_v221_response_attest',
+        'pas_client_v221_modification_group-pas_client_v221_response_attest',
+        'pas_client_v221_submit_response_must_support-pas_client_v221_response_attest',
+        'pas_client_v221_inquire_response_must_support-pas_client_v221_response_attest'
       ],
       # 170.315(g)(33)(i)(C)(3): subscriptions per (j)(21), to support pended responses
       "#{G33_SET}@8" => [
@@ -80,10 +91,14 @@ module ONCCertificationG33TestKit
       ],
       # 170.315(j)(21)(iii): client capabilities for the "R4 Topic-Based Subscription Server
       # Capability Statement". Only the create interaction is exercised - see @6 and @7.
+      #
+      # A capability requirement like @6, so it is tagged on the group that checks the Subscription
+      # conforms rather than on the test that only receives it.
       "#{J21_SET}@4" => [
-        'pas_client_v221_subscription_create_test'
+        'g33_pas_client_v221_subscription_setup'
       ],
-      # 170.315(j)(21)(iii): the Subscription "create" interaction
+      # 170.315(j)(21)(iii): the Subscription "create" interaction, which this test is the direct
+      # evidence of
       "#{J21_SET}@5" => [
         'pas_client_v221_subscription_create_test'
       ],

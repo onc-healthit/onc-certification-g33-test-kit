@@ -7,12 +7,12 @@ module ONCCertificationG33TestKit
   # attested to here.
   class RestHookDocumentationAttestationTest < Inferno::Test
     id :g33_rest_hook_documentation_attestation
-    ATTESTATION_TITLE = 'Subscriptions client endpoint capabilities for the "REST-Hook" channel include ' \
-                        'complete accompanying technical documentation'.freeze
+    ATTESTATION_TITLE = 'Health IT Module documentation includes technical details on its ability to receive ' \
+                        'Subscription notifications over a "REST-Hook" endpoint'.freeze
     title ATTESTATION_TITLE
     description %(
-      During this test, the tester will confirm that the supported subscriptions client endpoint
-      capabilities for the "REST-Hook" channel are accompanied by complete technical documentation.
+      During this test, the tester will confirm that the Health IT Module's documentation includes
+      technical details on its ability to receive Subscription notifications over a "REST-Hook" endpoint.
       To see the specifics of the attested requirements, click the "View Specification Requirements" link for this
       test.
     )
@@ -25,8 +25,8 @@ module ONCCertificationG33TestKit
     input :rest_hook_documentation_attestation,
           title: ATTESTATION_TITLE,
           description: %(
-            I attest that the supported subscriptions client endpoint capabilities for the
-            "REST-Hook" channel include complete accompanying technical documentation.
+            I attest that the Health IT Module's documentation includes technical details on its
+            ability to receive Subscription notifications over a "REST-Hook" endpoint.
           ),
           type: 'radio',
           default: 'false',
