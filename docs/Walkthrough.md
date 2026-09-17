@@ -264,6 +264,12 @@ attestations for the remaining requirements of the criterion.
 *   To review the exact requirement text behind a test, open its 'ABOUT' tab and follow the
     'View Specification Requirements' link.
 
+One of these tests, 'Subscriptions client endpoint capabilities for the "REST-Hook" channel
+include complete accompanying technical documentation', covers the documentation requirement in
+§ 170.315(g)(33)(ii). Have the technical documentation for the Health IT Module's REST-Hook
+notification endpoint on hand before the run, since the attestation covers whether that
+documentation is complete.
+
 These tests cover areas that for now are very broad or otherwise difficult to demonstrate or mechanically verify.
 
 ## Step 10: Review Results
