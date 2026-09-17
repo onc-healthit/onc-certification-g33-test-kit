@@ -178,6 +178,62 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     end
   end
 
+  # The (g)(33) and (j)(21) requirements are added to tests that are imported from the PAS client
+  # suite, so they are applied after the fact rather than declared in a test definition.
+  describe 'certification requirements' do
+    let(:requirements_repo) { Inferno::Repositories::Requirements.new }
+    let(:suite_requirement_ids) { requirements_repo.requirements_for_suite(suite.id).map(&:id) }
+    let(:mapped_requirement_ids) { ONCCertificationG33TestKit::G33Requirements::REQUIREMENT_MAP.keys }
+    let(:certification_requirement_ids) do
+      suite_requirement_ids.select { |id| id.start_with?('170.315') }
+    end
+
+    it 'declares both certification criteria as requirement sets' do
+      sets = suite.requirement_sets.to_h { |set| [set.identifier, set.actor] }
+
+      expect(sets[ONCCertificationG33TestKit::G33Requirements::G33_SET]).to eq('Provider')
+      expect(sets[ONCCertificationG33TestKit::G33Requirements::J21_SET]).to eq('Client')
+    end
+
+    # A requirement that is renumbered or dropped upstream would otherwise silently stop being
+    # verified by anything.
+    it 'maps only requirements the suite actually loads' do
+      expect(mapped_requirement_ids).to_not be_empty
+      expect(mapped_requirement_ids - suite_requirement_ids).to be_empty
+    end
+
+    it 'verifies every mapped requirement with at least one runnable' do
+      verified = suite.all_verified_requirements
+
+      expect(mapped_requirement_ids - verified).to be_empty
+    end
+
+    # The Subscription update and delete API tests are pending, and (g)(33)(ii) is a documentation
+    # requirement with no test. Everything else is expected to be covered.
+    it 'leaves only the known gaps unverified' do
+      verified = suite.all_verified_requirements
+      unverified = certification_requirement_ids - verified
+
+      expect(unverified).to contain_exactly(
+        "#{ONCCertificationG33TestKit::G33Requirements::G33_SET}@9",
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
+      )
+    end
+
+    # The certification requirements are added to the IG requirements each test already declares.
+    it 'keeps the IG requirements the imported tests declare' do
+      test = all_runnables.find do |runnable|
+        runnable.id.to_s.end_with?('pas_client_v221_subscription_create_test')
+      end
+
+      expect(test.verifies_requirements).to include('hl7.fhir.us.davinci-pas_2.2.1@spec-8')
+      expect(test.verifies_requirements).to include(
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@5"
+      )
+    end
+  end
+
   # The PAS claim endpoint derives both of these from its suite id, which does not carry the version
   # or the prefix here, so both are overridden.
   describe 'claim endpoint' do

@@ -3,6 +3,7 @@ require 'smart_app_launch_test_kit' # added this requirement to test backend ser
 require_relative 'metadata'
 require_relative 'g33_options'
 require_relative 'g33_pas_import'
+require_relative 'g33_requirements'
 require_relative 'endpoints/g33_claim_endpoint'
 
 module ONCCertificationG33TestKit
@@ -88,6 +89,17 @@ module ONCCertificationG33TestKit
                  ]
 
     requirement_sets(
+      {
+        identifier: G33Requirements::G33_SET,
+        title: 'ONC Certification Criterion § 170.315(g)(33) Provider prior authorization API—' \
+               'prior authorization support',
+        actor: 'Provider'
+      },
+      {
+        identifier: G33Requirements::J21_SET,
+        title: 'ONC Certification Criterion § 170.315(j)(21) Subscriptions—client',
+        actor: 'Client'
+      },
       {
         identifier: "hl7.fhir.us.davinci-pas_#{G33Options::PAS_V221}",
         title: "Da Vinci Prior Authorization Support (PAS) v#{G33Options::PAS_V221}",
@@ -248,5 +260,9 @@ module ONCCertificationG33TestKit
     import_v221!(group(from: :pas_client_v221_auth_smart, id: :g33_pas_client_v221_auth_smart))
 
     import_v221!(group(from: :pas_client_v221_attestations, id: :g33_pas_client_v221_attestations))
+
+    # Adds the (g)(33) and (j)(21) certification requirements to the imported runnables that verify
+    # them, after every group has been imported.
+    G33Requirements.apply!(self)
   end
 end
