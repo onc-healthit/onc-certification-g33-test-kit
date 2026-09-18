@@ -7,9 +7,12 @@ you will be able to use the test kit to evaluate a Health IT Module for
 conformance to the (g)(33) certification criterion.
 
 This test kit evaluates a **Health IT Module**, specifically a provider system
-that submits prior authorization requests to a payer. Each step of this
-walkthrough describes the kinds of actions that a tester would take within their
-Health IT Module when running these tests against it.
+that submits prior authorization requests to a payer. Each step of this walkthrough
+describes the kinds of actions that a tester would take within their Health IT Module
+when running these tests against it. Many of the steps also include demonstration
+execution details for using the [ONC-hosted instance](https://inferno.healthit.gov/suites/g33_certification)
+to evaluate the behavior of the publicly available [Da Vinci burden reduction BR Provider reference implementation](https://br-provider.davinci.hl7.org/).
+Note that the reference implementation may not pass all tests.
 
 During the tests, Inferno will act as a PAS payer server for the Health IT
 Module to interact with. Inferno publishes simulated `$submit`, `$inquire`, and
@@ -22,20 +25,16 @@ tester takes actions within the Health IT Module that trigger the relevant
 requests and acknowledges within the Inferno UI once all requests have been sent
 so that Inferno knows to start evaluating them.
 
-NOTE: If multiple people are running this demonstration at the same time, unexpected results
-may occur. If you see strange behavior, pause execution and try again later.
-
 The following steps necessary to complete certification testing are described in more detail below:
 *   [Step 1: Create a new (g)(33) Test Session](#step-1-create-a-new-g33-test-session)
-*   [Step 2: Configure the Health IT Module Under Test](#step-2-configure-the-health-it-module-under-test)
-*   [Step 3: Perform Client Registration Tests](#step-3-perform-client-registration-tests)
-*   [Step 4: Perform Subscription Setup Tests](#step-4-perform-subscription-setup-tests)
-*   [Step 5: Perform PAS Workflow Tests](#step-5-perform-pas-workflow-tests)
-*   [Step 6: Perform Must Support Element Tests](#step-6-perform-must-support-element-tests)
-*   [Step 7: Perform Error Handling Tests](#step-7-perform-error-handling-tests)
-*   [Step 8: Review Authentication Interactions](#step-8-review-authentication-interactions)
-*   [Step 9: Complete Visual Inspection and Attestation](#step-9-complete-visual-inspection-and-attestation)
-*   [Step 10: Review Results](#step-10-review-results)
+*   [Step 2: Perform Client Registration Tests and Configure the Health IT Module Under Test](#step-2-perform-client-registration-tests-and-configure-the-health-it-module-under-test)
+*   [Step 3: Perform Subscription Setup Tests](#step-4-perform-subscription-setup-tests)
+*   [Step 4: Perform PAS Workflow Tests](#step-5-perform-pas-workflow-tests)
+*   [Step 5: Perform Must Support Element Tests](#step-6-perform-must-support-element-tests)
+*   [Step 6: Perform Error Handling Tests](#step-7-perform-error-handling-tests)
+*   [Step 7: Review Authentication Interactions](#step-8-review-authentication-interactions)
+*   [Step 8: Complete Visual Inspection and Attestation](#step-9-complete-visual-inspection-and-attestation)
+*   [Step 9: Review Results](#step-10-review-results)
 
 ## Step 1: Create a new (g)(33) test session
 
@@ -46,10 +45,8 @@ The following steps necessary to complete certification testing are described in
   Certification Program.
 * Click 'Create Test Session' to start testing.
 
-This creates a new test session. The header states which version of the test kit
-is being used and which client version was selected.
-
-The tests are organized into seven groups that in sum cover the requirements of the criterion:
+This creates a new test session. The tests are organized into seven groups that in
+sum cover the requirements of the criterion:
 
 1.  **Client Registration** - the Health IT Module registers with Inferno as a SMART
     confidential asymmetric client and is given Inferno's simulated PAS endpoints.
@@ -73,37 +70,20 @@ Subscription that the pended workflow notifies against, and 'Review
 Authentication Interactions' evaluates the token requests made while running the
 earlier groups.
 
-## Step 2: Configure the Health IT Module under test
+## Step 2: Perform Client Registration tests and configure the Health IT Module under test
 
-Inferno simulates a PAS payer server. In order to pass the certification tests,
-Health IT Modules will need to be configured to submit prior authorization
-requests to Inferno's endpoints and to authenticate using SMART Backend
-Services.
-
-Inferno's simulated PAS endpoints:
-*   FHIR base URL: `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`
-*   Prior authorization submission: `<FHIR base>/Claim/$submit`
-*   Prior authorization inquiry: `<FHIR base>/Claim/$inquire`
-*   Subscription creation: `<FHIR base>/Subscription`
-*   SMART discovery: `<FHIR base>/.well-known/smart-configuration`
-
-The exact URLs for your session are displayed during the 'Client Registration'
-group, and are the authoritative values to configure.
-
-## Step 3: Perform Client Registration tests
-
-The 'Client Registration' group records the connection details that the rest of
-the tests rely on, so it must be run first. Inferno will not accept prior authorization 
-requests while waiting during this group. However, the client system will be able
-to make token requests to validate connectivity and client registration.
+The 'Client Registration' group verifies and records the connection details that
+the rest of the tests rely on, so it must be run first. Inferno will not accept
+prior authorization requests while waiting during this group. However, the client
+system will be able to make token requests to validate connectivity and client registration.
 
 *   Select '1 Client Registration' and click 'RUN TESTS'.
 *   Provide the registration inputs:
     *   **Client Id**: the client id Inferno will expect the Health IT Module to use
         when requesting access tokens. Testers may provide a specific value; if
         none is provided, the Inferno session id is used. This value identifies
-        which test session an incoming request belongs to, so the Health IT
-        Module must be configured with exactly this value.
+        which test session an incoming request belongs to, so it should be unique
+        and the Health IT Module must be configured with exactly this value.
     *   **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: the Health IT
         Module's JWK Set, either as a publicly accessible URL or as raw JSON.
         Inferno uses this to verify the signature on the client assertions the
@@ -111,9 +91,33 @@ to make token requests to validate connectivity and client registration.
 *   Click 'SUBMIT'.
 *   Inferno displays its simulated server details, including the FHIR base URL
     and token endpoint. Configure the Health IT Module to connect to Inferno at
-    these endpoints, test token requests if desired, then click the confirmation link in the dialog.
+    these endpoints, test token requests if desired, then click the confirmation
+    link in the dialog.
 
-## Step 4: Perform Subscription Setup tests
+### Reference implementation registration example
+
+The input values to register the BR Provider reference implementation can be pulled
+in by applying the "Da Vinci BR Provider Reference Implementation" preset before
+running the "Registration" group. The specific values are:
+- **Client Id**: left blank so that the session id is chosen for the client id (this ensures that no other session running this demonstration will conflict with it)
+- **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://BR Provider.davinci.hl7.org/api/security/jwks`
+
+To configure the BR Provider reference implementation to connect to your session
+1. In a separate tab, navigate to https://br-provider.davinci.hl7.org/ and login (no password needed) as a practitioner (any).
+1. Configure the connection to Inferno's simulated CRD server by:
+  1. Clicking the gear icon in the upper right to open the settings dialog.
+  1. Select the "Payor" tab
+  1. Use the "Server" dropdown to select the "Custom" option.
+  1. In the "CDS Services URL" input, put `https://br-payer.davinci.hl7.org/cds-services`.
+  1. In the "FHIR" input, put Inferno's FHIR url displayed during the Registration
+     test (e.g., `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`).
+  1. From the "Authentication" dropdown, select `SMART Backend Services`
+  1. In the "Client ID" input, copy the client id displayed during the Registration
+     test (11 character alpha-numeric value).
+  1. Click the "Bypass payor-handled check" box.
+  1. Click the "Save" button and close the dialog to complete the setup.
+
+## Step 3: Perform Subscription Setup tests
 
 The (g)(33) criterion requires support for subscriptions so that the Health IT
 Module can be notified when a pended prior authorization is updated. This group
@@ -135,7 +139,12 @@ respond to Inferno's handshake.
 *   Upon receipt, Inferno will send a handshake notification to the endpoint named in
     the Subscription to verify that notifications can be sent to it.
 
-## Step 5: Perform PAS Workflow tests
+### Reference implementation subscriptions example
+
+This demonstration does not currently how to trigger Subscriptions for a
+pended workflow demonstration with the BR Provider reference implementation.
+
+## Step 4: Perform PAS Workflow tests
 
 The workflow tests verify that the Health IT Module can participate in complete
 end-to-end prior authorization interactions, initiating requests and reacting
@@ -180,7 +189,31 @@ generates a response from the request it received; see [Generation
 logic](https://github.com/inferno-framework/davinci-pas-test-kit/wiki/Client-Details#generation-logic)
 in the PAS Test Kit wiki for how those responses are built.
 
-## Step 6: Perform Must Support element tests
+### Reference implementation approval workflow example
+
+Within the BR Provider system, you can trigger a prior-authorization request to
+Inferno in the following way:
+1. In Inferno, run group "3.1 Approval Workflow" without any changes to the inputs so that the default mocked response response will be used. When the dialog appears indicating Inferno is ready to receive requests, return to the tab with the reference implementation.
+1. Select patient "Roosevelt, Theodor Alan Roosevelt" to open their chart.
+1. Start an encounter by clicking the "Start Encounter" button in the far upper
+   right of the chart window.
+1. Select the "EO424 - Stationary compressed gas 02" order (which will require
+   prior authorization for this patient) from the "Add Order" dropdown and click
+   the "+ Add" button to the right of the dropdown.  
+1. Click the "Sign all Orders" button at the bottom of the chart frame (scroll down).
+   On the next screen, click the "Confirm & Sign" button. This will trigger hook
+   requests and within a few seconds you should see authorization details for the
+   order, including an option to "Submit PA".
+1. Click the option to "Submit PA" and then click the "Submit Prior Authorization"
+   button on the next screen. The response should come back and be displayed
+   as "Approved".
+1. Return to the Inferno tab, which will have begun to evaluate the prior authorization
+   interaction. A "User Action Required" dialog will appear asking for comfirmation
+   that the order displayed has having prior authorization "approved". Click the
+   appropriate answer based on what you saw in the reference implementation. This
+   will complete the tests.
+
+## Step 5: Perform Must Support element tests
 
 During these tests, the Health IT Module shows that it supports all PAS-defined
 profiles and the must support elements defined in them, both in the requests it
@@ -221,7 +254,7 @@ elements, and the tester attests whether the Health IT Module collects that data
 The unobserved elements are also recorded as `info` messages on the test result,
 so they can be reviewed after the run.
 
-## Step 7: Perform Error Handling tests
+## Step 6: Perform Error Handling tests
 
 The error handling tests verify that the Health IT Module can appropriately
 handle prior authorization error responses from the payer. This group contains
@@ -235,7 +268,7 @@ two sub-groups:
 For each, submit a request when prompted, and then attest that the Health IT
 Module handled the error appropriately.
 
-## Step 8: Review Authentication Interactions
+## Step 7: Review Authentication Interactions
 
 This group does not require any new interaction with the Health IT Module.
 Inferno verifies that the access token requests made during the earlier groups
@@ -248,7 +281,12 @@ Because these tests evaluate requests made earlier, at least one of the
 preceding groups that exchanges prior authorization requests must have been run
 first. If no token requests were made, the tests will skip rather than fail.
 
-## Step 9: Complete Visual Inspection and Attestation
+### Reference implementation authentication interactions
+
+After completing the approval workflow demonstration in step 4, this group
+can be run and should pass for the reference implementation.
+
+## Step 8: Complete Visual Inspection and Attestation
 
 Not every requirement can be verified automatically. This group collects
 attestations for the remaining requirements of the criterion.
@@ -272,7 +310,7 @@ includes those details.
 
 These tests cover areas that for now are very broad or otherwise difficult to demonstrate or mechanically verify.
 
-## Step 10: Review Results
+## Step 9: Review Results
 
 All tests have now been completed. To print out a copy of the results, click the 'Report' icon in
 the menu on the left and then the 'Print' icon within that view. Export this report if you would
