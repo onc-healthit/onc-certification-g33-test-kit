@@ -199,8 +199,12 @@ in the PAS Test Kit wiki for how those responses are built.
 
 Within the BR Provider system, you can trigger a prior-authorization request to
 Inferno in the following way:
-1. In Inferno, run group "3.1 Approval Workflow" without any changes to the inputs so that the default mocked response response will be used. When the dialog appears indicating Inferno is ready to receive requests, return to the tab with the reference implementation.
-1. Select patient "Roosevelt, Theodor Alan Roosevelt" to open their chart.
+1. In Inferno, run group "3.1 Approval Workflow" without any changes to the inputs so
+   that the default mocked response response will be used. When the dialog appears
+   indicating Inferno is ready to receive requests, return to the tab with the
+   reference implementation.
+1. In the reference implementation tab, select patient "Roosevelt, Theodor Alan
+   Roosevelt" to open their chart.
 1. Start an encounter by clicking the "Start Encounter" button in the far upper
    right of the chart window.
 1. Select the "EO424 - Stationary compressed gas 02" order (which will require
