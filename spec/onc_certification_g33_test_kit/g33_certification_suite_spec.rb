@@ -131,6 +131,8 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       end
     end
     let(:imported_ids) { short_ids(leaf_tests(suite, selected_options)) }
+    # Tests this suite defines itself, which cover requirements the PAS client suite has no test for
+    let(:locally_defined_ids) { ['g33_rest_hook_documentation_attestation'] }
 
     it 'imports every required SMART Backend Services test from the PAS client suite' do
       expect(expected_ids).to_not be_empty
@@ -138,7 +140,11 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     end
 
     it 'imports nothing the PAS client suite does not define for this client type' do
-      expect(imported_ids - expected_ids).to be_empty
+      expect(imported_ids - expected_ids - locally_defined_ids).to be_empty
+    end
+
+    it 'adds the locally defined tests to the imported groups' do
+      expect(locally_defined_ids - imported_ids).to be_empty
     end
   end
 
@@ -175,6 +181,71 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       end
 
       expect(stale.map(&:id)).to be_empty
+    end
+  end
+
+  # The (g)(33) and (j)(21) requirements are added to tests that are imported from the PAS client
+  # suite, so they are applied after the fact rather than declared in a test definition.
+  describe 'certification requirements' do
+    let(:requirements_repo) { Inferno::Repositories::Requirements.new }
+    let(:suite_requirement_ids) { requirements_repo.requirements_for_suite(suite.id).map(&:id) }
+    let(:mapped_requirement_ids) { ONCCertificationG33TestKit::G33Requirements::REQUIREMENT_MAP.keys }
+    let(:certification_requirement_ids) do
+      suite_requirement_ids.select { |id| id.start_with?('170.315') }
+    end
+
+    it 'declares both certification criteria as requirement sets' do
+      sets = suite.requirement_sets.to_h { |set| [set.identifier, set.actor] }
+
+      expect(sets[ONCCertificationG33TestKit::G33Requirements::G33_SET]).to eq('Provider')
+      expect(sets[ONCCertificationG33TestKit::G33Requirements::J21_SET]).to eq('Client')
+    end
+
+    # A requirement that is renumbered or dropped upstream would otherwise silently stop being
+    # verified by anything.
+    it 'maps only requirements the suite actually loads' do
+      expect(mapped_requirement_ids).to_not be_empty
+      expect(mapped_requirement_ids - suite_requirement_ids).to be_empty
+    end
+
+    it 'verifies every mapped requirement with at least one runnable' do
+      verified = suite.all_verified_requirements
+
+      expect(mapped_requirement_ids - verified).to be_empty
+    end
+
+    # The Subscription update and delete API tests are pending, so the requirements that only they
+    # would verify are the one remaining gap. Everything else is expected to be covered.
+    it 'leaves only the known gaps unverified' do
+      verified = suite.all_verified_requirements
+      unverified = certification_requirement_ids - verified
+
+      expect(unverified).to contain_exactly(
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
+      )
+    end
+
+    # (g)(33)(ii) has no corresponding test in the PAS client or Subscriptions test kits, so this
+    # suite defines the attestation that covers it rather than mapping it onto an imported runnable.
+    it 'covers the REST-Hook documentation requirement with an attestation defined here' do
+      requirement_id = "#{ONCCertificationG33TestKit::G33Requirements::G33_SET}@9"
+      test = all_runnables.find { |runnable| runnable.id.to_s.end_with?('g33_rest_hook_documentation_attestation') }
+
+      expect(test.verifies_requirements).to include(requirement_id)
+      expect(ONCCertificationG33TestKit::G33Requirements::REQUIREMENT_MAP).to_not have_key(requirement_id)
+    end
+
+    # The certification requirements are added to the IG requirements each test already declares.
+    it 'keeps the IG requirements the imported tests declare' do
+      test = all_runnables.find do |runnable|
+        runnable.id.to_s.end_with?('pas_client_v221_subscription_create_test')
+      end
+
+      expect(test.verifies_requirements).to include('hl7.fhir.us.davinci-pas_2.2.1@spec-8')
+      expect(test.verifies_requirements).to include(
+        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@5"
+      )
     end
   end
 
