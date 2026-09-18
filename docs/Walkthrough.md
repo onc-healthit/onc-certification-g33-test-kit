@@ -109,7 +109,7 @@ To configure the BR Provider reference implementation to connect to your session
    to receive requests, continue to the next step.
 1. In a separate tab, navigate to https://br-provider.davinci.hl7.org/ and login
    (no password needed) as a practitioner (any).
-1. Configure the connection to Inferno's simulated CRD server by:
+1. Configure the connection to Inferno's simulated PAS server by:
   1. Clicking the gear icon in the upper right to open the settings dialog.
   1. Select the "Payer" tab
   1. Use the "Server" dropdown to select the "Custom" option.
