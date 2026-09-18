@@ -103,19 +103,25 @@ running the "Registration" group. The specific values are:
 - **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://BR Provider.davinci.hl7.org/api/security/jwks`
 
 To configure the BR Provider reference implementation to connect to your session
-1. In a separate tab, navigate to https://br-provider.davinci.hl7.org/ and login (no password needed) as a practitioner (any).
+1. In Inferno, apply present "Da Vinci BR Provider reference implementation" using
+   the dropdown in the upper right. Then run group "1 Client Registration" without
+   changing any of the inputs. When the dialog appears indicating Inferno is ready
+   to receive requests, continue to the next step.
+1. In a separate tab, navigate to https://br-provider.davinci.hl7.org/ and login
+   (no password needed) as a practitioner (any).
 1. Configure the connection to Inferno's simulated CRD server by:
   1. Clicking the gear icon in the upper right to open the settings dialog.
-  1. Select the "Payor" tab
+  1. Select the "Payer" tab
   1. Use the "Server" dropdown to select the "Custom" option.
   1. In the "CDS Services URL" input, put `https://br-payer.davinci.hl7.org/cds-services`.
-  1. In the "FHIR" input, put Inferno's FHIR url displayed during the Registration
-     test (e.g., `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`).
+  1. In the "FHIR" input, put Inferno's FHIR url displayed in the "User Action Required"
+     dialog on the Inferno tab (e.g., `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`).
   1. From the "Authentication" dropdown, select `SMART Backend Services`
-  1. In the "Client ID" input, copy the client id displayed during the Registration
-     test (11 character alpha-numeric value).
+  1. In the "Client ID" input, copy the client id displayed in the "User Action Required"
+     dialog on the Inferno tab (11 character alpha-numeric value).
   1. Click the "Bypass payor-handled check" box.
   1. Click the "Save" button and close the dialog to complete the setup.
+  1. Back in Inferno, click the link to confirm the configuration and continue the tests.
 
 ## Step 3: Perform Subscription Setup tests
 
