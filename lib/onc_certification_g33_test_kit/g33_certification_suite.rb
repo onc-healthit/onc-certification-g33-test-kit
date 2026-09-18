@@ -212,7 +212,7 @@ module ONCCertificationG33TestKit
     end
 
     # SMART Backend Services is the only authentication approach used
-    SMART_GROUP_CONFIG = { inputs: { client_id: { optional: false } } }.freeze
+    CLIENT_ID_REQUIERED = { inputs: { client_id: { optional: false } } }.freeze
 
     # Imports a group from the PAS v2.2.1 client suite and tags it with that version, so the
     # :pas_version suite option selects between versions rather than showing every version's groups
@@ -226,35 +226,35 @@ module ONCCertificationG33TestKit
     import_v221!(
       group(from: :pas_client_v221_registration, id: :g33_pas_client_v221_registration) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(SMART_GROUP_CONFIG)
+        config({ inputs: { client_id: { optional: true } } })
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_subscription_setup, id: :g33_pas_client_v221_subscription_setup) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(SMART_GROUP_CONFIG)
+        config(CLIENT_ID_REQUIERED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_workflows, id: :g33_pas_client_v221_workflows) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(SMART_GROUP_CONFIG)
+        config(CLIENT_ID_REQUIERED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_must_support, id: :g33_pas_client_v221_must_support) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(SMART_GROUP_CONFIG)
+        config(CLIENT_ID_REQUIERED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_error_handling_group, id: :g33_pas_client_v221_error_handling) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(SMART_GROUP_CONFIG)
+        config(CLIENT_ID_REQUIERED)
       end
     )
 
