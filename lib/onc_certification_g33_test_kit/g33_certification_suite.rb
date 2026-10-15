@@ -104,12 +104,16 @@ module ONCCertificationG33TestKit
       {
         identifier: "hl7.fhir.us.davinci-pas_#{G33Options::PAS_V221}",
         title: "Da Vinci Prior Authorization Support (PAS) v#{G33Options::PAS_V221}",
-        actor: 'PAS Client'
+        actor: 'PAS Client',
+        requirements: 'conf-7,conf-8,conf-14,conf-15,conf-16-A,priv-1-A,priv-1-B,prof-1,prof-2,prof-3,prof-4,prof-5,' \
+                      'prof-6,prof-7,prof-8,prof-9,prof-10,spec-1,spec-4,spec-8,spec-62,spec-65,spec-66,spec-67,' \
+                      'spec-68,spec-69,spec-70,spec-71,spec-72,use-5,hrex-conf-1,hrex-conf-2'
       },
       {
         identifier: 'hl7.fhir.uv.subscriptions_1.1.0',
         title: 'Subscriptions R5 Backport IG',
-        actor: 'Client'
+        actor: 'Client',
+        requirements: '23,24,64,68,71,76,81,82,96,116'
       }
     )
 
@@ -252,7 +256,7 @@ module ONCCertificationG33TestKit
     )
 
     import_v221!(
-      group(from: :pas_client_v221_error_handling_group, id: :g33_pas_client_v221_error_handling) do
+      group(from: :pas_client_v221_subscription_update_delete, id: :g33_pas_client_v221_subscription_update_delete) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
         config(CLIENT_ID_REQUIERED)
       end

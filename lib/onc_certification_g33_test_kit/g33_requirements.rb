@@ -58,11 +58,10 @@ module ONCCertificationG33TestKit
       "#{G33_SET}@7" => [
         'pas_client_v221_approval_group-pas_client_v221_response_attest',
         'pas_client_v221_denial_group-pas_client_v221_response_attest',
-        'pas_client_v221_pended_group-Group02-pas_client_v221_response_attest',
-        'pas_client_v221_pended_group-Group03-pas_client_v221_response_attest',
+        'pas_client_v221_pended_group-Group01-pas_client_v221_pended_response_attest',
+        'pas_client_v221_pended_group-Group01-pas_client_v221_pended_finalized_response_attest',
         'pas_client_v221_modification_group-pas_client_v221_response_attest',
-        'pas_client_v221_submit_response_must_support-pas_client_v221_response_attest',
-        'pas_client_v221_inquire_response_must_support-pas_client_v221_response_attest'
+        'pas_client_v221_must_support_receive-pas_client_v221_response_attest_ms_submit_inquire'
       ],
       # 170.315(g)(33)(i)(C)(3): subscriptions per (j)(21), to support pended responses
       "#{G33_SET}@8" => [
@@ -90,7 +89,7 @@ module ONCCertificationG33TestKit
         'pas_client_subscription_pas_conformance_test'
       ],
       # 170.315(j)(21)(iii): client capabilities for the "R4 Topic-Based Subscription Server
-      # Capability Statement". Only the create interaction is exercised - see @6 and @7.
+      # Capability Statement".
       #
       # A capability requirement like @6, so it is tagged on the group that checks the Subscription
       # conforms rather than on the test that only receives it.
@@ -100,10 +99,18 @@ module ONCCertificationG33TestKit
       # 170.315(j)(21)(iii): the Subscription "create" interaction, which this test is the direct
       # evidence of
       "#{J21_SET}@5" => [
-        'pas_client_v221_subscription_create_test'
+        'g33_pas_client_v221_subscription_setup-subscriptions_r4_client_subscription_verification',
+        'g33_pas_client_v221_subscription_setup-pas_client_subscription_pas_conformance_test'
       ],
-      # 170.315(j)(21)(iii)@6 ("update") and @7 ("delete") are not verified: the Subscriptions
-      # update and delete API tests are pending.
+      # 170.315(j)(21)(iii)@6 ("update")
+      "#{J21_SET}@6" => [
+        'pas_client_v221_subscription_update_delete_conformance-subscriptions_r4_client_put_update_verification',
+        'pas_client_v221_subscription_update_delete_conformance-pas_client_v221_subscription_put_update_pas_conformance_test' # rubocop:disable Layout/LineLength
+      ],
+      # and 170.315(j)(21)(iii)@7 ("delete")
+      "#{J21_SET}@7" => [
+        'pas_client_v221_subscription_update_delete_conformance-subscriptions_r4_client_delete_verification'
+      ],
 
       # 170.315(j)(21)(iv): receive notifications per "Topic-Based Subscriptions - FHIR R4"
       "#{J21_SET}@8" => [
