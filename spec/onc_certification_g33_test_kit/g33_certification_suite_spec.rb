@@ -214,9 +214,7 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       expect(mapped_requirement_ids - verified).to be_empty
     end
 
-    # The Subscription update and delete API tests are pending, so the requirements that only they
-    # would verify are the one remaining gap. Everything else is expected to be covered.
-    it 'leaves only the known gaps unverified' do
+    it 'verifies every certification requirement' do
       verified = suite.all_verified_requirements
       unverified = certification_requirement_ids - verified
 
@@ -236,10 +234,10 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     # The certification requirements are added to the IG requirements each test already declares.
     it 'keeps the IG requirements the imported tests declare' do
       test = all_runnables.find do |runnable|
-        runnable.id.to_s.end_with?('pas_client_v221_subscription_create_test')
+        runnable.id.to_s.end_with?('subscription_setup-pas_client_subscription_pas_conformance_test')
       end
 
-      expect(test.verifies_requirements).to include('hl7.fhir.us.davinci-pas_2.2.1@spec-8')
+      expect(test.verifies_requirements).to include('hl7.fhir.us.davinci-pas_2.2.1@spec-62')
       expect(test.verifies_requirements).to include(
         "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@5"
       )

@@ -96,8 +96,8 @@ module ONCCertificationG33TestKit
       "#{J21_SET}@4" => [
         'g33_pas_client_v221_subscription_setup'
       ],
-      # 170.315(j)(21)(iii): the Subscription "create" interaction, which this test is the direct
-      # evidence of
+      # 170.315(j)(21)(iii): the Subscription "create" interaction, tagged on the tests that check
+      # the created Subscription rather than on the test that only receives it
       "#{J21_SET}@5" => [
         'g33_pas_client_v221_subscription_setup-subscriptions_r4_client_subscription_verification',
         'g33_pas_client_v221_subscription_setup-pas_client_subscription_pas_conformance_test'
