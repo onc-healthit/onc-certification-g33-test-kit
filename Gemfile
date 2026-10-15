@@ -9,7 +9,7 @@ gemspec
 # this points at git.
 gem 'davinci_pas_test_kit',
     git: 'https://github.com/inferno-framework/davinci-pas-test-kit.git',
-    branch: 'main'
+    branch: 'demo-prep'
 
 group :development, :test do
   gem 'debug'

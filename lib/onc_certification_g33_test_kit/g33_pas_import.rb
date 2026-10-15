@@ -11,6 +11,13 @@ module ONCCertificationG33TestKit
   end
 
   module G33PASImport
+    RUNNABLE_TEXT_FIELDS = [:title, :short_title, :description, :input_instructions].freeze
+    INPUT_TEXT_FIELDS = [:title, :description].freeze
+
+    # Singular references only: statements about "PAS clients" in general are left as is.
+    PAS_CLIENT_PATTERN = /PAS client(?!s)/
+    HEALTH_IT_MODULE = 'Health IT Module'.freeze
+
     def self.import!(runnable)
       exclude_optional!(runnable)
       rewrite_pas_urls!(runnable)
@@ -43,26 +50,36 @@ module ONCCertificationG33TestKit
     private_class_method :rewrite_endpoint_suite_id!
 
     def self.rewrite_runnable_text!(runnable)
-      [:description, :input_instructions].each do |field|
-        text = runnable.send(field).to_s
-        next unless text.include?(pas_base_url)
+      RUNNABLE_TEXT_FIELDS.each do |field|
+        text = runnable.send(field)
+        next if text.nil?
 
-        runnable.send(field, text.gsub(pas_base_url, base_url))
+        rewritten = rewrite_text(text)
+        runnable.send(field, rewritten) unless rewritten == text
       end
     end
     private_class_method :rewrite_runnable_text!
 
     def self.rewrite_input_descriptions!(runnable)
       updates = runnable.config.inputs.each_with_object({}) do |(identifier, input), acc|
-        description = input.description.to_s
-        next unless description.include?(pas_base_url)
+        input_updates = INPUT_TEXT_FIELDS.each_with_object({}) do |field, field_acc|
+          text = input.send(field)
+          next if text.nil?
 
-        acc[identifier] = { description: description.gsub(pas_base_url, base_url) }
+          rewritten = rewrite_text(text)
+          field_acc[field] = rewritten unless rewritten == text
+        end
+
+        acc[identifier] = input_updates if input_updates.any?
       end
 
       runnable.config(inputs: updates) if updates.any?
     end
     private_class_method :rewrite_input_descriptions!
+
+    def self.rewrite_text(text)
+      text.to_s.gsub(pas_base_url, base_url).gsub(PAS_CLIENT_PATTERN, HEALTH_IT_MODULE)
+    end
 
     # The suite id as it appears in endpoint paths, including the PAS version prefix
     def self.prefixed_suite_id
