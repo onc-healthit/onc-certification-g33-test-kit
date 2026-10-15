@@ -28,18 +28,18 @@ so that Inferno knows to start evaluating them.
 The following steps necessary to complete certification testing are described in more detail below:
 *   [Step 1: Create a new (g)(33) Test Session](#step-1-create-a-new-g33-test-session)
 *   [Step 2: Perform Client Registration Tests and Configure the Health IT Module Under Test](#step-2-perform-client-registration-tests-and-configure-the-health-it-module-under-test)
-*   [Step 3: Perform Subscription Setup Tests](#step-4-perform-subscription-setup-tests)
-*   [Step 4: Perform PAS Workflow Tests](#step-5-perform-pas-workflow-tests)
-*   [Step 5: Perform Must Support Element Tests](#step-6-perform-must-support-element-tests)
-*   [Step 6: Perform Error Handling Tests](#step-7-perform-error-handling-tests)
-*   [Step 7: Review Authentication Interactions](#step-8-review-authentication-interactions)
-*   [Step 8: Complete Visual Inspection and Attestation](#step-9-complete-visual-inspection-and-attestation)
-*   [Step 9: Review Results](#step-10-review-results)
+*   [Step 3: Perform Subscription Setup Tests](#step-3-perform-subscription-setup-tests)
+*   [Step 4: Perform PAS Scenario Tests](#step-4-perform-pas-scenario-tests)
+*   [Step 5: Perform Must Support Element Tests](#step-5-perform-must-support-element-tests)
+*   [Step 6: Subscription Update and Deletion](#step-6-subscription-update-and-deletion)
+*   [Step 7: Review Authentication Interactions](#step-7-review-authentication-interactions)
+*   [Step 8: Complete Visual Inspection and Attestation](#step-8-complete-visual-inspection-and-attestation)
+*   [Step 9: Review Results](#step-9-review-results)
 
 ## Step 1: Create a new (g)(33) test session
 
 * Go to <https://inferno.healthit.gov>.
-* Click the 'ONC (g)(33) Prior Authorization Support API Test Kit' button under 'ONC Health
+* Click the 'ONC (g)(33) Prior Authorization Support API Test Kit' button under 'ONC Health IT
   Certification Program', which is an Inferno test kit developed specifically to
   test the requirements of the (g)(33) criterion in the ONC Health IT
   Certification Program.
@@ -52,12 +52,11 @@ sum cover the requirements of the criterion:
     confidential asymmetric client and is given Inferno's simulated PAS endpoints.
 2.  **Subscription Setup** - the Health IT Module creates a Subscription so that it can be
     notified when pended prior authorization requests are updated.
-3.  **PAS Workflows** - the Health IT Module participates in complete prior authorization
+3.  **PAS Scenarios** - the Health IT Module participates in complete prior authorization
     interactions, covering approved, denied, pended, updated, and payer-modified requests.
 4.  **Must Support Elements** - the Health IT Module demonstrates that it can send and receive
     all PAS-defined profiles and their must support elements.
-5.  **Error Handling** - the Health IT Module handles both HTTP-level operation failures and
-    business-level processing errors returned within a response bundle.
+5.  **Subscription Update and Deletion** - the Health IT Module can update and delete Subscriptions.
 6.  **Review Authentication Interactions** - Inferno verifies that the token requests made during
     the earlier groups conformed to SMART Backend Services requirements.
 7.  **Visual Inspection and Attestation** - the tester confirms the Health IT Module conforms to
@@ -66,9 +65,11 @@ sum cover the requirements of the criterion:
 The groups are intended to be run in order. Later groups depend on data collected
 during earlier ones. In particular, 'Client Registration' records the client id
 that ties incoming requests to your session, 'Subscription Setup' creates the
-Subscription that the pended workflow notifies against, and 'Review
+Subscription that the pended scenario notifies against, and 'Review
 Authentication Interactions' evaluates the token requests made while running the
-earlier groups.
+earlier groups. Tests using notifications, including the 'Pended Response' scenario
+and potentially the 'Must Support Elements' tests cannot be run after the 
+'Subscription Update and Deletion' tests.
 
 ## Step 2: Perform Client Registration tests and configure the Health IT Module under test
 
@@ -89,7 +90,7 @@ system will be able to make token requests to validate connectivity and client r
         Inferno uses this to verify the signature on the client assertions the
         Health IT Module sends when requesting tokens.
 *   Click 'SUBMIT'.
-*   Inferno displays its simulated server details, including the FHIR base URL
+*   Inferno displays its simulated PAS server details, including the FHIR base URL
     and token endpoint. Configure the Health IT Module to connect to Inferno at
     these endpoints, test token requests if desired, then click the confirmation
     link in the dialog.
@@ -100,28 +101,28 @@ The input values to register the BR Provider reference implementation can be pul
 in by applying the "Da Vinci BR Provider Reference Implementation" preset before
 running the "Registration" group. The specific values are:
 - **Client Id**: left blank so that the session id is chosen for the client id (this ensures that no other session running this demonstration will conflict with it)
-- **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://BR Provider.davinci.hl7.org/api/security/jwks`
+- **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://br-provider.davinci.hl7.org/api/security/jwks`
 
 To configure the BR Provider reference implementation to connect to your session
-1. In Inferno, apply present "Da Vinci BR Provider reference implementation" using
+1. In Inferno, apply preset "Da Vinci BR Provider reference implementation" using
    the dropdown in the upper right. Then run group "1 Client Registration" without
    changing any of the inputs. When the dialog appears indicating Inferno is ready
    to receive requests, continue to the next step.
 1. In a separate tab, navigate to https://br-provider.davinci.hl7.org/ and login
    (no password needed) as a practitioner (any).
 1. Configure the connection to Inferno's simulated PAS server by:
-  1. Clicking the gear icon in the upper right to open the settings dialog.
-  1. Select the "Payer" tab
-  1. Use the "Server" dropdown to select the "Custom" option.
-  1. In the "CDS Services URL" input, put `https://br-payer.davinci.hl7.org/cds-services`.
-  1. In the "FHIR" input, put Inferno's FHIR url displayed in the "User Action Required"
-     dialog on the Inferno tab (e.g., `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`).
-  1. From the "Authentication" dropdown, select `SMART Backend Services`
-  1. In the "Client ID" input, copy the client id displayed in the "User Action Required"
+   1. Clicking the gear icon in the upper right to open the settings dialog.
+   1. Select the "Payer" tab
+   1. Use the "Server" dropdown to select the "Custom" option.
+   1. In the "CDS Services URL" input, put `https://br-payer.davinci.hl7.org/cds-services`.
+   1. In the "FHIR" input, put Inferno's FHIR url displayed in the "User Action Required"
+      dialog on the Inferno tab (e.g., `https://inferno.healthit.gov/suites/custom/g33_certification/pas_v221/fhir`).
+   1. From the "Authentication" dropdown, select `SMART Backend Services`
+   1. In the "Client ID" input, copy the client id displayed in the "User Action Required"
      dialog on the Inferno tab (11 character alpha-numeric value).
-  1. Click the "Bypass payor-handled check" box.
-  1. Click the "Save" button and close the dialog to complete the setup.
-  1. Back in Inferno, click the link to confirm the configuration and continue the tests.
+   1. Click the "Bypass payor-handled check" box.
+   1. Click the "Save" button and close the dialog to complete the setup.
+1. Back in Inferno, click the link to confirm the configuration and continue the tests.
 
 ## Step 3: Perform Subscription Setup tests
 
@@ -147,14 +148,14 @@ respond to Inferno's handshake.
 
 ### Reference implementation subscriptions example
 
-This demonstration does not currently how to trigger Subscriptions for a
+This demonstration does not currently show how to trigger Subscriptions for a
 pended workflow demonstration with the BR Provider reference implementation.
 
-## Step 4: Perform PAS Workflow tests
+## Step 4: Perform PAS Scenario tests
 
-The workflow tests verify that the Health IT Module can participate in complete
+The scenario tests verify that the Health IT Module can participate in complete
 end-to-end prior authorization interactions, initiating requests and reacting
-appropriately to the responses returned. This group contains five sub-groups:
+appropriately to the responses returned. This group contains seven sub-groups:
 
 *   **Approval Workflow** - a request that the payer approves.
 *   **Denial Workflow** - a request that the payer denies.
@@ -165,6 +166,8 @@ appropriately to the responses returned. This group contains five sub-groups:
     canceling the entire request.
 *   **Payer Modifications** - a request the payer partially authorizes with
     modified items.
+*   **Operation Failure** - a request that the payer fails to process.
+*   **Processing Errors** - a request for which the payer returns business errors.
 
 Each sub-group follows the same pattern:
 
@@ -175,39 +178,43 @@ Each sub-group follows the same pattern:
     *   **Approval Workflow**: Claim approved response JSON
     *   **Denial Workflow**: Claim denied response JSON
     *   **Pended Workflow**: Claim pended response JSON, Claim updated
-        notification JSON, and Inquire approved response JSON
+        notification JSON, and Client Notification Access Token
     *   **Claim Updates**: Initial claim response JSON, Add-item update response
         JSON, Modify-and-cancel update response JSON, and
         Cancel-entire-request update response JSON
     *   **Payer Modifications**: Claim modified response JSON
+    *   **Operation Failure**: Operation Failure OperationOutcome JSON (Required),
+        Operation Failure HTTP Status Code
+    *   **Processing Errors** - Processing Error Response Bundle JSON (Required)
 *   When the 'User Action Required' dialog appears, submit a prior authorization
     request from the Health IT Module to the URL shown.
 *   Inferno validates the request bundle and the response bundle it returned, and
     then asks you to attest that the Health IT Module displayed the decision
     appropriately.
 
-These response inputs are all optional. When one is populated, Inferno modifies
+Most response inputs are optional. When one is populated, Inferno modifies
 the provided message before returning it, for example to apply current
 timestamps; see [Inferno modifications of tester-provided responses and
 notifications](https://github.com/inferno-framework/davinci-pas-test-kit/wiki/Client-Details#inferno-modifications-of-tester-provided-responses-and-notifications)
-in the PAS Test Kit wiki for the details. When one is left blank, Inferno instead
-generates a response from the request it received; see [Generation
+in the PAS Test Kit wiki for the details. When an optional one is left blank,
+Inferno instead generates a response from the request it received;
+see [Generation
 logic](https://github.com/inferno-framework/davinci-pas-test-kit/wiki/Client-Details#generation-logic)
 in the PAS Test Kit wiki for how those responses are built.
 
-### Reference implementation approval workflow example
+### Reference implementation approval scenario example
 
 Within the BR Provider system, you can trigger a prior-authorization request to
 Inferno in the following way:
-1. In Inferno, run group "3.1 Approval Workflow" without any changes to the inputs so
-   that the default mocked response response will be used. When the dialog appears
+1. In Inferno, run group "3.1 Approval Response" without any changes to the inputs so
+   that the default mocked response will be used. When the dialog appears
    indicating Inferno is ready to receive requests, return to the tab with the
    reference implementation.
 1. In the reference implementation tab, select patient "Roosevelt, Theodor Alan
    Roosevelt" to open their chart.
 1. Start an encounter by clicking the "Start Encounter" button in the far upper
    right of the chart window.
-1. Select the "EO424 - Stationary compressed gas 02" order (which will require
+1. Select the "E0424 - Stationary compressed gas O2" order (which will require
    prior authorization for this patient) from the "Add Order" dropdown and click
    the "+ Add" button to the right of the dropdown.  
 1. Click the "Sign all Orders" button at the bottom of the chart frame (scroll down).
@@ -218,10 +225,14 @@ Inferno in the following way:
    button on the next screen. The response should come back and be displayed
    as "Approved".
 1. Return to the Inferno tab, which will have begun to evaluate the prior authorization
-   interaction. A "User Action Required" dialog will appear asking for comfirmation
-   that the order displayed has having prior authorization "approved". Click the
+   interaction. A "User Action Required" dialog will appear asking for confirmation
+   that the order displayed as having prior authorization "approved". Click the
    appropriate answer based on what you saw in the reference implementation. This
    will complete the tests.
+
+This walkthrough doesn't contain details on running the other scenarios against
+the BR Provider reference implementation, but execution would proceed in a similar
+way.
 
 ## Step 5: Perform Must Support element tests
 
@@ -241,42 +252,27 @@ sends and in the responses it can receive.
 Inferno considers requests made during the PAS Workflows group as well, so only
 profiles and elements not already demonstrated there need to be submitted here.
 
-Not every Health IT Module collects every must support element, and the PAS
-implementation guide does not require that they do. Three of the tests in this
-group therefore offer an attestation when coverage is incomplete:
+## Step 6: Subscription Update and Deletion
 
-*   'At least one instance of a request profile (PAS Medication Request, PAS
-    Service Request, PAS Device Request, or PAS Nutrition Order)...'
-*   'All must support elements for other profiles referenced by Claim
-    submissions are observed on $submit requests'
-*   'All must support elements for other profiles referenced by Claim inquiries
-    are observed on $inquire requests'
+During these tests, the Health IT Module shows that it can update and delete
+the Subscription created during the "Subscription Setup" group. Because
+that Subscription is used by Inferno to deliver notifications, this group
+needs to be run after all PAS requests have been sent to Inferno. If additional
+PAS requests that will require notifications need to be sent, re-run the
+"Subscription Setup" group to create a new Subscription.
 
-If every must support element was observed, these tests pass without asking for
-anything further. If any were not, the test pauses and lists the unobserved
-elements, and the tester attests whether the Health IT Module collects that data:
+To run
+*   Select '5 Subscription Update and Deletion' and click 'RUN TESTS'.
+*   When the 'User Action Required' dialog appears, trigger from the
+    Health IT Module a FHIR update followed by a delete interaction on the indicated Subscription.
+*   Once all requests have been made, click the link in the  'User Action
+    Required' dialog to continue the tests. Inferno will evaluate the
+    requests for conformance.
 
-*   Follow the link indicating the statement is **true** if the Health IT Module
-    does **not** collect the data for the listed elements. The test passes.
-*   Follow the link indicating the statement is **false** if it does collect
-    them, meaning they should have appeared in the requests. The test fails.
+### Reference implementation subscriptions example
 
-The unobserved elements are also recorded as `info` messages on the test result,
-so they can be reviewed after the run.
-
-## Step 6: Perform Error Handling tests
-
-The error handling tests verify that the Health IT Module can appropriately
-handle prior authorization error responses from the payer. This group contains
-two sub-groups:
-
-*   **Operation Failure** - Inferno returns an HTTP error status with an
-    `OperationOutcome` rather than a response bundle.
-*   **Processing Errors** - Inferno returns a response bundle containing
-    business-level error entries.
-
-For each, submit a request when prompted, and then attest that the Health IT
-Module handled the error appropriately.
+This demonstration does not currently show how to trigger Subscription updates
+within the BR Provider reference implementation.
 
 ## Step 7: Review Authentication Interactions
 

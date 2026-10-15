@@ -7,7 +7,7 @@ Some test kits use a "generator" to automatically generate the contents of a tes
 
 
 ## 2. Non-published IG
-If your IG, or the specific version of the IG you want to test against, is not published, then the validator service needs to load the IG from file in order to be able to validate resources with it. The IG must be referenced in the `fhir_resource_validator` block in the test suite definition by filename, ie:
+If your IG, or the specific version of the IG you want to test against, is not published, then the validator service needs to load the IG from file in order to be able to validate resources with it. The IG must be referenced in the `fhir_resource_validator` block in the test suite definition by filename, i.e.:
 
 ```ruby
       fhir_resource_validator do
