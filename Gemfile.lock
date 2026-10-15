@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/inferno-framework/davinci-pas-test-kit.git
-  revision: f101233b23bb1b29b21cbda4ca9acbd969b1a455
+  revision: 5cc6e907625ad8488c80639288c54c6b7b5d08cf
   branch: demo-prep
   specs:
     davinci_pas_test_kit (0.15.2)

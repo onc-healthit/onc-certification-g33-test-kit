@@ -220,10 +220,7 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       verified = suite.all_verified_requirements
       unverified = certification_requirement_ids - verified
 
-      expect(unverified).to contain_exactly(
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
-      )
+      expect(unverified).to be_empty
     end
 
     # (g)(33)(ii) has no corresponding test in the PAS client or Subscriptions test kits, so this

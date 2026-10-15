@@ -17,7 +17,7 @@ module ONCCertificationG33TestKit
       for Health Level 7 (HL7®) Fast Healthcare Interoperability Resources
       (FHIR®) clients seeking to meet the requirements of the
       [prior authorization submission criterion § 170.315(g)(33)](https://healthit.gov/test-method/provider-prior-authorization-api-prior-authorization-support)
-      in the ONC Certification Program.
+      in the ONC Health IT Certification Program.
 
       **DISCLAIMER**: this test kit is currently a draft and not ready for ONC certification purposes.
 
@@ -216,7 +216,7 @@ module ONCCertificationG33TestKit
     end
 
     # SMART Backend Services is the only authentication approach used
-    CLIENT_ID_REQUIERED = { inputs: { client_id: { optional: false } } }.freeze
+    CLIENT_ID_REQUIRED = { inputs: { client_id: { optional: false } } }.freeze
 
     # Imports a group from the PAS v2.2.1 client suite and tags it with that version, so the
     # :pas_version suite option selects between versions rather than showing every version's groups
@@ -237,28 +237,28 @@ module ONCCertificationG33TestKit
     import_v221!(
       group(from: :pas_client_v221_subscription_setup, id: :g33_pas_client_v221_subscription_setup) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_workflows, id: :g33_pas_client_v221_workflows) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_must_support, id: :g33_pas_client_v221_must_support) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_subscription_update_delete, id: :g33_pas_client_v221_subscription_update_delete) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 

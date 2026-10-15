@@ -41,7 +41,7 @@ module ONCCertificationG33TestKit
       ],
       # 170.315(g)(33)(i)(C)(1): the "EHR PAS Capabilities" CapabilityStatement, which requires the
       # Claim $submit and $inquire operations and the Subscription create, update, and delete
-      # interactions. Update and delete are not yet exercised - see 170.315(j)(21)@6 and @7.
+      # interactions.
       #
       # Tagged on the groups rather than on the individual interaction tests: those tests only let
       # Inferno receive a request, and it is the surrounding group that checks the request conforms.
