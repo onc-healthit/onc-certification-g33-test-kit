@@ -88,6 +88,24 @@ module ONCCertificationG33TestKit
                      value: G33Options::CLIENT_TYPE
                    }
                  ]
+    suite_option :us_core_version,
+                 title: 'US Core Version',
+                 description: 'The US Core version whose profiles are used to validate supporting ' \
+                              'information resources that have no PAS profile.',
+                 list_options: [
+                   {
+                     label: 'US Core 3.1.1',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_3_1_1
+                   },
+                   {
+                     label: 'US Core 6.1.0',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_6_1_0
+                   },
+                   {
+                     label: 'US Core 7.0.0',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_7_0_0
+                   }
+                 ]
 
     requirement_sets(
       {
@@ -123,6 +141,22 @@ module ONCCertificationG33TestKit
       validation_context do
         txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
         displayWarnings false
+      end
+
+      exclude_message do |message|
+        # Messages expected of the form `<ResourceType>: <FHIRPath>: <message>`
+        # We strip `<ResourceType>: <FHIRPath>: ` for the sake of matching
+        DaVinciPASTestKit::V221_SUPPRESSED_MESSAGES.match?(message.message.sub(/\A\S+: \S+: /, ''))
+      end
+    end
+
+    fhir_resource_validator :no_custom_extensions do
+      igs(G33Options::PAS_V221_IG_PACKAGE, G33Options::US_CORE_IG_PACKAGE)
+
+      validation_context do
+        txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
+        displayWarnings false
+        extensions [] # no extensions not in the spec
       end
 
       exclude_message do |message|
