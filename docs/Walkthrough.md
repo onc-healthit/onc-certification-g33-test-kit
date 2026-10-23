@@ -100,12 +100,12 @@ system will be able to make token requests to validate connectivity and client r
 
 The input values to register the BR Provider reference implementation can be pulled
 in by applying the "Da Vinci BR Provider Reference Implementation" preset before
-running the "Registration" group. The specific values are:
+running the "1 Client Registration" group. The specific values are:
 - **Client Id**: left blank so that the session id is chosen for the client id (this ensures that no other session running this demonstration will conflict with it)
 - **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://BR Provider.davinci.hl7.org/api/security/jwks`
 
 To configure the BR Provider reference implementation to connect to your session
-1. In Inferno, apply present "Da Vinci BR Provider reference implementation" using
+1. In Inferno, apply preset "Da Vinci BR Provider reference implementation" using
    the dropdown in the upper right. Then run group "1 Client Registration" without
    changing any of the inputs. When the dialog appears indicating Inferno is ready
    to receive requests, continue to the next step.
@@ -149,7 +149,7 @@ respond to Inferno's handshake.
 
 ### Reference implementation subscriptions example
 
-This demonstration does not currently how to trigger Subscriptions for a
+This demonstration does not currently show how to trigger Subscriptions for a
 pended workflow demonstration with the BR Provider reference implementation.
 
 ## Step 4: Perform PAS Scenario tests
@@ -181,8 +181,8 @@ Each sub-group follows the same pattern:
     'PAS Scenarios' presents all of them at once:
     *   **Approval Response**: Claim approved response JSON
     *   **Denial Response**: Claim denied response JSON
-    *   **Pended Response**: Claim pended response JSON and Claim updated
-        notification JSON
+    *   **Pended Response**: Claim pended response JSON, Claim updated
+        notification JSON, and Client Notification Access Token
     *   **Claim Updates**: Initial claim response JSON, Add-item update response
         JSON, Modify-and-cancel update response JSON, and
         Cancel-entire-request update response JSON
@@ -192,9 +192,9 @@ Each sub-group follows the same pattern:
     *   **Processing Errors**: Processing Error Response Bundle JSON
 *   When the 'User Action Required' dialog appears, submit a prior authorization
     request from the Health IT Module to the URL shown.
-*   Inferno validates the request bundle and the response it returned, and
-    then asks you to attest that the Health IT Module displayed the decision or
-    error appropriately.
+*   Inferno asks you to attest that the Health IT Module displayed the decision
+    or error appropriately, and then validates the request and the response it
+    returned.
 
 The Operation Failure OperationOutcome JSON and Processing Error Response Bundle
 JSON inputs are required, since Inferno cannot generate error responses. The other
@@ -230,7 +230,7 @@ Inferno in the following way:
    button on the next screen. The response should come back and be displayed
    as "Approved".
 1. Return to the Inferno tab, which will have begun to evaluate the prior authorization
-   interaction. A "User Action Required" dialog will appear asking for comfirmation
+   interaction. A "User Action Required" dialog will appear asking for confirmation
    that the order displayed has having prior authorization "approved". Click the
    appropriate answer based on what you saw in the reference implementation. This
    will complete the tests.
@@ -287,8 +287,9 @@ so they can be reviewed after the run.
 
 ## Step 6: Perform Subscription Update and Deletion tests
 
-The (g)(33) criterion requires support for the Subscription update and delete
-interactions as well as create. These tests verify that the Health IT Module can
+The (g)(33) criterion requires support for subscriptions as specified in
+§ 170.315(j)(21), which includes the Subscription update and delete interactions
+as well as create. These tests verify that the Health IT Module can
 update and then delete the Subscription it created during 'Subscription Setup'.
 
 Run this group after the PAS Scenarios and Must Support Elements groups. Inferno
