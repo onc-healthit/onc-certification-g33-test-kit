@@ -56,8 +56,9 @@ module ONCCertificationG33TestKit
       # Consuming a ClaimResponse is only observable to the tester, so this is tagged on the
       # attestations that the response reached the user, across every workflow that returns one,
       # including the processing error workflow, whose ClaimResponse carries the errors, and on the
-      # attestation that responses with every must support element were handled. The operation
-      # failure workflow returns an OperationOutcome rather than a ClaimResponse, so it is not tagged.
+      # attestation that the responses returned during the must support group were handled without
+      # error. The operation failure workflow returns an OperationOutcome rather than a ClaimResponse,
+      # so it is not tagged.
       "#{G33_SET}@7" => [
         'pas_client_v221_approval_group-pas_client_v221_response_attest',
         'pas_client_v221_denial_group-pas_client_v221_response_attest',
@@ -109,17 +110,16 @@ module ONCCertificationG33TestKit
       "#{J21_SET}@5" => [
         'pas_client_v221_subscription_create_test'
       ],
-      # 170.315(j)(21)(iii): the Subscription "update" interaction. The interaction test receives the
-      # update, and the conformance tests check it.
+      # 170.315(j)(21)(iii): the Subscription "update" interaction. Tagged on the conformance tests
+      # rather than the interaction test, which passes once the tester continues whether or not an
+      # update was sent, while these skip when none was received.
       "#{J21_SET}@6" => [
-        'pas_client_v221_subscription_update_delete_test',
         'subscriptions_r4_client_put_update_verification',
         'pas_client_v221_subscription_put_update_pas_conformance_test'
       ],
-      # 170.315(j)(21)(iii): the Subscription "delete" interaction. The interaction test receives the
-      # delete, and the conformance test checks it.
+      # 170.315(j)(21)(iii): the Subscription "delete" interaction, tagged on the conformance test for
+      # the same reason as @6.
       "#{J21_SET}@7" => [
-        'pas_client_v221_subscription_update_delete_test',
         'subscriptions_r4_client_delete_verification'
       ],
 
