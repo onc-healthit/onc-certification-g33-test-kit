@@ -119,6 +119,7 @@ module ONCCertificationG33TestKit
       validation_context do
         txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
         displayWarnings false
+        snomedCT DaVinciPASTestKit::SNOMED_CT_US_EDITION
       end
 
       exclude_message do |message|
@@ -136,6 +137,7 @@ module ONCCertificationG33TestKit
       validation_context do
         txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
         displayWarnings false
+        snomedCT DaVinciPASTestKit::SNOMED_CT_US_EDITION
         extensions []
       end
 
@@ -197,9 +199,17 @@ module ONCCertificationG33TestKit
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_PATH,
                    DaVinciPASTestKit::SubscriptionCreateEndpoint
     suite_endpoint :get, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
-                   SubscriptionsTestKit::SubscriptionReadEndpoint
+                   DaVinciPASTestKit::SubscriptionReadEndpoint
+    suite_endpoint :put, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionUpdateEndpoint
+    suite_endpoint :delete, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionDeleteEndpoint
     suite_endpoint :get, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
-                   SubscriptionsTestKit::SubscriptionReadEndpoint
+                   DaVinciPASTestKit::SubscriptionReadEndpoint
+    suite_endpoint :put, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionUpdateEndpoint
+    suite_endpoint :delete, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionDeleteEndpoint
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_STATUS_PATH,
                    DaVinciPASTestKit::SubscriptionStatusEndpoint
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_STATUS_PATH,
