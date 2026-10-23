@@ -41,33 +41,38 @@ module ONCCertificationG33TestKit
       ],
       # 170.315(g)(33)(i)(C)(1): the "EHR PAS Capabilities" CapabilityStatement, which requires the
       # Claim $submit and $inquire operations and the Subscription create, update, and delete
-      # interactions. Update and delete are not yet exercised - see 170.315(j)(21)@6 and @7.
+      # interactions.
       #
       # Tagged on the groups rather than on the individual interaction tests: those tests only let
       # Inferno receive a request, and it is the surrounding group that checks the request conforms.
       "#{G33_SET}@6" => [
         'g33_pas_client_v221_subscription_setup',
         'g33_pas_client_v221_workflows',
-        'g33_pas_client_v221_must_support'
+        'g33_pas_client_v221_must_support',
+        'g33_pas_client_v221_subscription_update_delete'
       ],
       # 170.315(g)(33)(i)(C)(2): "Support the ability to consume and process a 'ClaimResponse.'"
       #
       # Consuming a ClaimResponse is only observable to the tester, so this is tagged on the
       # attestations that the response reached the user, across every workflow that returns one,
-      # and on the attestations that its must support elements were handled.
+      # including the processing error workflow, whose ClaimResponse carries the errors, and on the
+      # attestation that responses with every must support element were handled. The operation
+      # failure workflow returns an OperationOutcome rather than a ClaimResponse, so it is not tagged.
       "#{G33_SET}@7" => [
         'pas_client_v221_approval_group-pas_client_v221_response_attest',
         'pas_client_v221_denial_group-pas_client_v221_response_attest',
-        'pas_client_v221_pended_group-Group02-pas_client_v221_response_attest',
-        'pas_client_v221_pended_group-Group03-pas_client_v221_response_attest',
+        'pas_client_v221_pended_response_attest',
+        'pas_client_v221_pended_finalized_response_attest',
+        'pas_client_v221_response_attest_updates',
         'pas_client_v221_modification_group-pas_client_v221_response_attest',
-        'pas_client_v221_submit_response_must_support-pas_client_v221_response_attest',
-        'pas_client_v221_inquire_response_must_support-pas_client_v221_response_attest'
+        'pas_client_v221_processing_error_group-pas_client_v221_response_attest',
+        'pas_client_v221_response_attest_ms_submit_inquire'
       ],
       # 170.315(g)(33)(i)(C)(3): subscriptions per (j)(21), to support pended responses
       "#{G33_SET}@8" => [
         'g33_pas_client_v221_subscription_setup',
-        'pas_client_v221_pended_group'
+        'pas_client_v221_pended_group',
+        'g33_pas_client_v221_subscription_update_delete'
       ],
       # 170.315(g)(33)(ii) is a documentation requirement on the client's REST-Hook notification
       # endpoint. No imported runnable demonstrates it, so it is verified by this suite's own
@@ -76,7 +81,8 @@ module ONCCertificationG33TestKit
       # 170.315(j)(21): subscriptions as a client per the Subscriptions R5 Backport IG
       "#{J21_SET}@1" => [
         'g33_pas_client_v221_subscription_setup',
-        'pas_client_v221_pended_group'
+        'pas_client_v221_pended_group',
+        'g33_pas_client_v221_subscription_update_delete'
       ],
       # 170.315(j)(21)(i): the "Topic-Based Subscriptions - FHIR R4" section
       "#{J21_SET}@2" => [
@@ -90,20 +96,32 @@ module ONCCertificationG33TestKit
         'pas_client_subscription_pas_conformance_test'
       ],
       # 170.315(j)(21)(iii): client capabilities for the "R4 Topic-Based Subscription Server
-      # Capability Statement". Only the create interaction is exercised - see @6 and @7.
+      # Capability Statement", which are the create, update, and delete interactions - see @5 to @7.
       #
-      # A capability requirement like @6, so it is tagged on the group that checks the Subscription
-      # conforms rather than on the test that only receives it.
+      # A capability requirement like (g)(33)@6, so it is tagged on the groups that check the
+      # Subscription requests conform rather than on the tests that only receive them.
       "#{J21_SET}@4" => [
-        'g33_pas_client_v221_subscription_setup'
+        'g33_pas_client_v221_subscription_setup',
+        'g33_pas_client_v221_subscription_update_delete'
       ],
       # 170.315(j)(21)(iii): the Subscription "create" interaction, which this test is the direct
       # evidence of
       "#{J21_SET}@5" => [
         'pas_client_v221_subscription_create_test'
       ],
-      # 170.315(j)(21)(iii)@6 ("update") and @7 ("delete") are not verified: the Subscriptions
-      # update and delete API tests are pending.
+      # 170.315(j)(21)(iii): the Subscription "update" interaction. The interaction test receives the
+      # update, and the conformance tests check it.
+      "#{J21_SET}@6" => [
+        'pas_client_v221_subscription_update_delete_test',
+        'subscriptions_r4_client_put_update_verification',
+        'pas_client_v221_subscription_put_update_pas_conformance_test'
+      ],
+      # 170.315(j)(21)(iii): the Subscription "delete" interaction. The interaction test receives the
+      # delete, and the conformance test checks it.
+      "#{J21_SET}@7" => [
+        'pas_client_v221_subscription_update_delete_test',
+        'subscriptions_r4_client_delete_verification'
+      ],
 
       # 170.315(j)(21)(iv): receive notifications per "Topic-Based Subscriptions - FHIR R4"
       "#{J21_SET}@8" => [

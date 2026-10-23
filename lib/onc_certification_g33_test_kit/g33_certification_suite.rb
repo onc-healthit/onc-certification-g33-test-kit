@@ -128,6 +128,22 @@ module ONCCertificationG33TestKit
       end
     end
 
+    # The imported tests validate the responses Inferno sends, which may be tester-provided, with this
+    # named validator so that they cannot contain extensions not defined in the IGs it loads
+    fhir_resource_validator DaVinciPASTestKit::NO_CUSTOM_EXTENSIONS_VALIDATOR do
+      igs(G33Options::PAS_V221_IG_PACKAGE, G33Options::US_CORE_IG_PACKAGE)
+
+      validation_context do
+        txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
+        displayWarnings false
+        extensions []
+      end
+
+      exclude_message do |message|
+        DaVinciPASTestKit::V221_SUPPRESSED_MESSAGES.match?(message.message.sub(/\A\S+: \S+: /, ''))
+      end
+    end
+
     # The PAS IG version lives in a path prefix rather than in the suite id, so this stays a single
     # suite as more versions are added
     PAS_V221_PREFIX = G33Options::PAS_V221_PREFIX
@@ -252,7 +268,7 @@ module ONCCertificationG33TestKit
     )
 
     import_v221!(
-      group(from: :pas_client_v221_error_handling_group, id: :g33_pas_client_v221_error_handling) do
+      group(from: :pas_client_v221_subscription_update_delete, id: :g33_pas_client_v221_subscription_update_delete) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
         config(CLIENT_ID_REQUIERED)
       end

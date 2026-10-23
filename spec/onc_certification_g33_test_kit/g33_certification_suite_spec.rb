@@ -148,6 +148,16 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     end
   end
 
+  # The imported tests look validators up by name at run time, so a name the PAS client suite defines
+  # but this suite does not would only fail when the test runs.
+  describe 'validators' do
+    it 'defines every validator the PAS client suite defines' do
+      pas_suite = Inferno::Repositories::TestSuites.new.find('davinci_pas_client_suite_v221')
+
+      expect(pas_suite.fhir_validators.keys - suite.fhir_validators.keys).to be_empty
+    end
+  end
+
   describe 'optional exclusion' do
     it 'excludes every optional runnable, not just direct children of the imported groups' do
       optional = all_runnables.reject { |runnable| runnable == suite }.select(&:optional?)
@@ -214,16 +224,11 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       expect(mapped_requirement_ids - verified).to be_empty
     end
 
-    # The Subscription update and delete API tests are pending, so the requirements that only they
-    # would verify are the one remaining gap. Everything else is expected to be covered.
-    it 'leaves only the known gaps unverified' do
+    it 'leaves no certification requirement unverified' do
       verified = suite.all_verified_requirements
-      unverified = certification_requirement_ids - verified
 
-      expect(unverified).to contain_exactly(
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
-      )
+      expect(certification_requirement_ids).to_not be_empty
+      expect(certification_requirement_ids - verified).to be_empty
     end
 
     # (g)(33)(ii) has no corresponding test in the PAS client or Subscriptions test kits, so this
