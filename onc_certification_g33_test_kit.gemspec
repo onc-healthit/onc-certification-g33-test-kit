@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/onc-healthit/onc-certification-g33-test-kit'
   spec.license       = 'Apache-2.0'
   spec.add_dependency 'davinci_pas_test_kit', '~> 0.15', '>= 0.15.2'
-  spec.add_dependency 'inferno_core', '~> 1.4', '>= 1.4.4'
+  spec.add_dependency 'inferno_core', '~> 1.4', '>= 1.4.6'
   spec.required_ruby_version = Gem::Requirement.new('>= 3.3.6')
   spec.metadata['inferno_test_kit'] = 'true'
   spec.metadata['homepage_uri'] = spec.homepage
