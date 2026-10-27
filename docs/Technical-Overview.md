@@ -139,6 +139,9 @@ used together:
      - Auth Type "Backend Services", the Client Id from step 1, and Encryption
        Algorithm `ES384`. Leave the JWKS and Key ID blank so that Inferno's
        default keys are used.
+     - Scopes: `system/*.read`. The simulated authorization server does not
+       check the requested scopes, so any value works; this one is the scope
+       it advertises in its SMART configuration.
 
      The group runs as a unit, so its individual tests cannot be run on their
      own. Only the last two are expected to pass here: "3.2.01" checks TLS and
