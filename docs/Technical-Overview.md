@@ -155,8 +155,15 @@ used together:
      - FHIR Server Endpoint URL:
        `<inferno-base>/custom/g33_certification/pas_v221/fhir`. Stop at `/fhir`;
        the suite appends `/Subscription` and `/Claim/$submit` itself.
-     - OAuth Credentials: Auth Type "Backend Services" and the access token
-       copied from step 2.
+     - OAuth Credentials: Auth Type "Backend Services", with the `bearer_token`
+       copied from step 2 in its Access Token field. The server suite sends it
+       on every request, and the (g)(33) suite reads the Client Id from it to
+       find the session.
+     - Notification Access Token: any value, such as `demo_execution`. This is
+       not the token from step 2. The server suite puts it in the Subscription's
+       `channel.header` so that the notifications the (g)(33) suite sends back
+       reach the server suite session. Leave the (g)(33) "Client Notification
+       Access Token" input blank, since it would override that header.
      - Request payloads for the group being run, which the PAS Test Kit's own
        server preset provides.
   1. Start the (g)(33) group under test and leave it on its "User Action
