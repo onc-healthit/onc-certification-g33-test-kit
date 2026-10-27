@@ -8,6 +8,12 @@ module ONCCertificationG33TestKit
     def base_url
       @base_url ||= G33PASImport.base_url
     end
+
+    # Tests that send notifications themselves, such as the pended notification test, hand this to the
+    # notification job, which builds the Subscription urls in the notification from it
+    def suite_id
+      G33PASImport.prefixed_suite_id
+    end
   end
 
   module G33PASImport

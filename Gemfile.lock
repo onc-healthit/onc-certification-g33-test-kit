@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/inferno-framework/davinci-pas-test-kit.git
-  revision: 49ffd923dabf379353e849beb39afb68223ba40c
+  revision: a646c660bf9cd228498dfe9c8528155b894575df
   branch: main
   specs:
     davinci_pas_test_kit (0.15.2)
-      inferno_core (~> 1.4, >= 1.4.0)
+      inferno_core (~> 1.4, >= 1.4.6)
       smart_app_launch_test_kit (~> 1.0, >= 1.0.2)
-      subscriptions_test_kit (~> 0.12, >= 0.12.2)
+      subscriptions_test_kit (~> 0.13, >= 0.13.0)
       udap_security_test_kit (~> 0.12, >= 0.12.2)
 
 PATH
@@ -14,7 +14,7 @@ PATH
   specs:
     onc_certification_g33_test_kit (0.0.0)
       davinci_pas_test_kit (~> 0.15, >= 0.15.2)
-      inferno_core (~> 1.4, >= 1.4.4)
+      inferno_core (~> 1.4, >= 1.4.6)
 
 GEM
   remote: https://rubygems.org/
@@ -143,6 +143,7 @@ GEM
       date_time_precision (>= 0.8)
       mime-types (>= 3.0)
       nokogiri (>= 1.11.4)
+    hana (1.3.7)
     hanami-controller (2.0.0)
       dry-configurable (~> 1.0, < 2)
       dry-core (~> 1.0)
@@ -168,7 +169,7 @@ GEM
       mutex_m
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    inferno_core (1.4.4)
+    inferno_core (1.5.0)
       activesupport (~> 7.2.3.1)
       base62-rb (= 0.3.1)
       blueprinter (= 0.25.2)
@@ -195,7 +196,7 @@ GEM
       pry-byebug
       puma (~> 8.0, >= 8.0.2)
       rake (~> 13.0)
-      roo (~> 2.10.1)
+      roo (~> 3.0.0)
       sequel (~> 5.42.0)
       sidekiq (~> 7.3.10)
       sqlite3 (~> 1.4)
@@ -315,9 +316,12 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     rexml (3.4.4)
-    roo (2.10.1)
+    roo (3.0.0)
+      base64 (~> 0.2)
+      csv (~> 3)
+      logger (~> 1)
       nokogiri (~> 1)
-      rubyzip (>= 1.3.0, < 3.0.0)
+      rubyzip (>= 3.0.0, < 4.0.0)
     rouge (4.7.0)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
@@ -352,7 +356,7 @@ GEM
       rubocop (~> 1.86, >= 1.86.2)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    rubyzip (2.4.1)
+    rubyzip (3.7.0)
     securerandom (0.4.1)
     sequel (5.42.0)
     sidekiq (7.3.10)
@@ -385,9 +389,10 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    subscriptions_test_kit (0.12.2)
+    subscriptions_test_kit (0.13.0)
       faraday (~> 1.10.5)
-      inferno_core (~> 1.3, >= 1.3.1)
+      hana (~> 1.3)
+      inferno_core (~> 1.4, >= 1.4.6)
     thor (1.5.0)
     tilt (2.9.0)
     tls_test_kit (1.0.2)
@@ -496,6 +501,7 @@ CHECKSUMS
   fhir_dstu2_models (1.2.0) sha256=efb8be21a0caef112ebc90a55762bacde1cbd457e13567895579c79dbcb1b16f
   fhir_models (5.1.0) sha256=5139aadcc372648847d648b2415911c4a2c053e57b3f02d2637ec6e3bdb2013f
   fhir_stu3_models (3.2.0) sha256=10479490abad0c67b4d9cc8e37a8bc9e7e943a9e7e75270ebb14bf3ef9ab43ab
+  hana (1.3.7) sha256=5425db42d651fea08859811c29d20446f16af196308162894db208cac5ce9b0d
   hanami-controller (2.0.0) sha256=73102e86bcdd4f3e65f0c103ffa31fed6b2c8c95f9e10c71055273a78ac10ec2
   hanami-router (2.0.0) sha256=e5b261933fdf04aa06d456dd4f5e61e0dc760201c7b55b80c2d6f18a2d9adbcd
   hanami-utils (2.2.0) sha256=7884ed3ef637697487d7cb57045adec3325b9273c550a34b0d0f0332ccee5f5a
@@ -506,7 +512,7 @@ CHECKSUMS
   http-cookie (1.1.6) sha256=ba4b82be64de61dc281243dac70e3c382c45142f20268ed9276a3670c93feaa9
   httpclient (2.9.0) sha256=4b645958e494b2f86c2f8a2f304c959baa273a310e77a2931ddb986d83e498c8
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
-  inferno_core (1.4.4) sha256=3c0af47ebac937ac1d385c2e21d4b414a5ad6b5b7dfa27aa0c1599ea4a80b35d
+  inferno_core (1.5.0) sha256=be5e965b4435116e5554abdada08680a666dd38504b3593ff0fa62d795c3928c
   io-console (0.9.2) sha256=efa74f891dd03c0939a931dfc6e74c2813d904763d456ea9762b0525e748db08
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.21.2) sha256=1f1d3b7cf2b3ba1a69beca0bb6db13d5438b80bff3cd54cdaaa620b9b07c1c6a
@@ -562,7 +568,7 @@ CHECKSUMS
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
   rest-client (2.1.0) sha256=35a6400bdb14fae28596618e312776c158f7ebbb0ccad752ff4fa142bf2747e3
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
-  roo (2.10.1) sha256=cbb43bc955f9c110e74b721c835fb9bd3515b63af88ec709ac87fbf30f8be70e
+  roo (3.0.0) sha256=6fdd7a9158d657c69768b4168754ff2110cc21fdc01a1bec1010820cb05c91b1
   rouge (4.7.0) sha256=dba5896715c0325c362e895460a6d350803dbf6427454f49a47500f3193ea739
   rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
@@ -574,7 +580,7 @@ CHECKSUMS
   rubocop-rspec (3.10.2) sha256=0b3e2ecc592cd10ecbf0095bb58d1e357905276e069643523cc19eb7495f65e2
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   ruby2_keywords (0.0.5) sha256=ffd13740c573b7301cf7a2e61fc857b2a8e3d3aff32545d6f8300d8bae10e3ef
-  rubyzip (2.4.1) sha256=8577c88edc1fde8935eb91064c5cb1aef9ad5494b940cf19c775ee833e075615
+  rubyzip (3.7.0) sha256=65c19294da75297a939006f3516deacc33185fbd721ff1954f7a231db6d3e121
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   sequel (5.42.0) sha256=d7309e3f792372ffad1d06a7ff826bdefa86623a055bc2f57b344eca5c77848b
   sidekiq (7.3.10) sha256=781eb4f65ef36042534ad73d72f211283afb7fee82eec786ada4ed1972ef8e3c
@@ -590,7 +596,7 @@ CHECKSUMS
   sqlite3 (1.7.3-x86_64-linux) sha256=522a3285660dec8253465880c97980e873db0d79060900be8d14194217a3ee73
   strings (0.2.1) sha256=933293b3c95cf85b81eb44b3cf673e3087661ba739bbadfeadf442083158d6fb
   strings-ansi (0.2.0) sha256=90262d760ea4a94cc2ae8d58205277a343409c288cbe7c29416b1826bd511c88
-  subscriptions_test_kit (0.12.2) sha256=66ccb5c9de8a39b78bf6d0cd9dc3cfa2c9f3953389a5d66d75593be827b2560e
+  subscriptions_test_kit (0.13.0) sha256=2232005e9c3f84124e7c89e3ec2bfaf863b66594837e0d863fe037710882f87a
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   tilt (2.9.0) sha256=da5735d0280bba96e9a91041bb14aee435ccad5c17b0fa519249ae543d9aa3a5
   tls_test_kit (1.0.2) sha256=5d71629528f1d64d074e6698fb74b2060b521970d62beeaad3424fca1fe3f17f

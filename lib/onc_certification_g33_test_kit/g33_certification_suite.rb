@@ -119,11 +119,29 @@ module ONCCertificationG33TestKit
       validation_context do
         txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
         displayWarnings false
+        snomedCT DaVinciPASTestKit::SNOMED_CT_US_EDITION
       end
 
       exclude_message do |message|
         # Messages expected of the form `<ResourceType>: <FHIRPath>: <message>`
         # We strip `<ResourceType>: <FHIRPath>: ` for the sake of matching
+        DaVinciPASTestKit::V221_SUPPRESSED_MESSAGES.match?(message.message.sub(/\A\S+: \S+: /, ''))
+      end
+    end
+
+    # The imported tests validate the responses Inferno sends, which may be tester-provided, with this
+    # named validator so that they cannot contain extensions not defined in the IGs it loads
+    fhir_resource_validator DaVinciPASTestKit::NO_CUSTOM_EXTENSIONS_VALIDATOR do
+      igs(G33Options::PAS_V221_IG_PACKAGE, G33Options::US_CORE_IG_PACKAGE)
+
+      validation_context do
+        txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
+        displayWarnings false
+        snomedCT DaVinciPASTestKit::SNOMED_CT_US_EDITION
+        extensions []
+      end
+
+      exclude_message do |message|
         DaVinciPASTestKit::V221_SUPPRESSED_MESSAGES.match?(message.message.sub(/\A\S+: \S+: /, ''))
       end
     end
@@ -181,9 +199,17 @@ module ONCCertificationG33TestKit
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_PATH,
                    DaVinciPASTestKit::SubscriptionCreateEndpoint
     suite_endpoint :get, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
-                   SubscriptionsTestKit::SubscriptionReadEndpoint
+                   DaVinciPASTestKit::SubscriptionReadEndpoint
+    suite_endpoint :put, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionUpdateEndpoint
+    suite_endpoint :delete, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionDeleteEndpoint
     suite_endpoint :get, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
-                   SubscriptionsTestKit::SubscriptionReadEndpoint
+                   DaVinciPASTestKit::SubscriptionReadEndpoint
+    suite_endpoint :put, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionUpdateEndpoint
+    suite_endpoint :delete, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_PATH,
+                   DaVinciPASTestKit::SubscriptionDeleteEndpoint
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::FHIR_SUBSCRIPTION_INSTANCE_STATUS_PATH,
                    DaVinciPASTestKit::SubscriptionStatusEndpoint
     suite_endpoint :post, PAS_V221_PREFIX + DaVinciPASTestKit::SESSION_FHIR_SUBSCRIPTION_INSTANCE_STATUS_PATH,
@@ -252,7 +278,7 @@ module ONCCertificationG33TestKit
     )
 
     import_v221!(
-      group(from: :pas_client_v221_error_handling_group, id: :g33_pas_client_v221_error_handling) do
+      group(from: :pas_client_v221_subscription_update_delete, id: :g33_pas_client_v221_subscription_update_delete) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
         config(CLIENT_ID_REQUIERED)
       end

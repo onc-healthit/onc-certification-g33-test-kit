@@ -28,13 +28,13 @@ so that Inferno knows to start evaluating them.
 The following steps necessary to complete certification testing are described in more detail below:
 *   [Step 1: Create a new (g)(33) Test Session](#step-1-create-a-new-g33-test-session)
 *   [Step 2: Perform Client Registration Tests and Configure the Health IT Module Under Test](#step-2-perform-client-registration-tests-and-configure-the-health-it-module-under-test)
-*   [Step 3: Perform Subscription Setup Tests](#step-4-perform-subscription-setup-tests)
-*   [Step 4: Perform PAS Workflow Tests](#step-5-perform-pas-workflow-tests)
-*   [Step 5: Perform Must Support Element Tests](#step-6-perform-must-support-element-tests)
-*   [Step 6: Perform Error Handling Tests](#step-7-perform-error-handling-tests)
-*   [Step 7: Review Authentication Interactions](#step-8-review-authentication-interactions)
-*   [Step 8: Complete Visual Inspection and Attestation](#step-9-complete-visual-inspection-and-attestation)
-*   [Step 9: Review Results](#step-10-review-results)
+*   [Step 3: Perform Subscription Setup Tests](#step-3-perform-subscription-setup-tests)
+*   [Step 4: Perform PAS Scenario Tests](#step-4-perform-pas-scenario-tests)
+*   [Step 5: Perform Must Support Element Tests](#step-5-perform-must-support-element-tests)
+*   [Step 6: Perform Subscription Update and Deletion Tests](#step-6-perform-subscription-update-and-deletion-tests)
+*   [Step 7: Review Authentication Interactions](#step-7-review-authentication-interactions)
+*   [Step 8: Complete Visual Inspection and Attestation](#step-8-complete-visual-inspection-and-attestation)
+*   [Step 9: Review Results](#step-9-review-results)
 
 ## Step 1: Create a new (g)(33) test session
 
@@ -52,12 +52,13 @@ sum cover the requirements of the criterion:
     confidential asymmetric client and is given Inferno's simulated PAS endpoints.
 2.  **Subscription Setup** - the Health IT Module creates a Subscription so that it can be
     notified when pended prior authorization requests are updated.
-3.  **PAS Workflows** - the Health IT Module participates in complete prior authorization
-    interactions, covering approved, denied, pended, updated, and payer-modified requests.
+3.  **PAS Scenarios** - the Health IT Module participates in complete prior authorization
+    interactions, covering approved, denied, pended, updated, and payer-modified requests,
+    and handles both HTTP-level operation failures and business-level processing errors.
 4.  **Must Support Elements** - the Health IT Module demonstrates that it can send and receive
     all PAS-defined profiles and their must support elements.
-5.  **Error Handling** - the Health IT Module handles both HTTP-level operation failures and
-    business-level processing errors returned within a response bundle.
+5.  **Subscription Update and Deletion** - the Health IT Module updates and deletes the
+    Subscription it created during 'Subscription Setup'.
 6.  **Review Authentication Interactions** - Inferno verifies that the token requests made during
     the earlier groups conformed to SMART Backend Services requirements.
 7.  **Visual Inspection and Attestation** - the tester confirms the Health IT Module conforms to
@@ -66,9 +67,10 @@ sum cover the requirements of the criterion:
 The groups are intended to be run in order. Later groups depend on data collected
 during earlier ones. In particular, 'Client Registration' records the client id
 that ties incoming requests to your session, 'Subscription Setup' creates the
-Subscription that the pended workflow notifies against, and 'Review
-Authentication Interactions' evaluates the token requests made while running the
-earlier groups.
+Subscription that the pended scenario notifies against, 'Subscription Update and
+Deletion' modifies that Subscription so must be run after the scenario and must
+support groups, and 'Review Authentication Interactions' evaluates the token
+requests made while running the earlier groups.
 
 ## Step 2: Perform Client Registration tests and configure the Health IT Module under test
 
@@ -98,12 +100,12 @@ system will be able to make token requests to validate connectivity and client r
 
 The input values to register the BR Provider reference implementation can be pulled
 in by applying the "Da Vinci BR Provider Reference Implementation" preset before
-running the "Registration" group. The specific values are:
+running the "1 Client Registration" group. The specific values are:
 - **Client Id**: left blank so that the session id is chosen for the client id (this ensures that no other session running this demonstration will conflict with it)
 - **SMART Confidential Asymmetric JSON Web Key Set (JWKS)**: `https://BR Provider.davinci.hl7.org/api/security/jwks`
 
 To configure the BR Provider reference implementation to connect to your session
-1. In Inferno, apply present "Da Vinci BR Provider reference implementation" using
+1. In Inferno, apply preset "Da Vinci BR Provider reference implementation" using
    the dropdown in the upper right. Then run group "1 Client Registration" without
    changing any of the inputs. When the dialog appears indicating Inferno is ready
    to receive requests, continue to the next step.
@@ -147,46 +149,56 @@ respond to Inferno's handshake.
 
 ### Reference implementation subscriptions example
 
-This demonstration does not currently how to trigger Subscriptions for a
+This demonstration does not currently show how to trigger Subscriptions for a
 pended workflow demonstration with the BR Provider reference implementation.
 
-## Step 4: Perform PAS Workflow tests
+## Step 4: Perform PAS Scenario tests
 
-The workflow tests verify that the Health IT Module can participate in complete
+The scenario tests verify that the Health IT Module can participate in complete
 end-to-end prior authorization interactions, initiating requests and reacting
-appropriately to the responses returned. This group contains five sub-groups:
+appropriately to the responses returned, including error responses. This group
+contains seven sub-groups:
 
-*   **Approval Workflow** - a request that the payer approves.
-*   **Denial Workflow** - a request that the payer denies.
-*   **Pended Workflow** - a request the payer pends, with the final decision
+*   **Approval Response** - a request that the payer approves.
+*   **Denial Response** - a request that the payer denies.
+*   **Pended Response** - a request the payer pends, with the final decision
     delivered later through a subscription notification.
 *   **Claim Updates** - a sequence of four submissions: an initial request, an
     update adding an item, an update modifying and canceling items, and an update
     canceling the entire request.
 *   **Payer Modifications** - a request the payer partially authorizes with
     modified items.
+*   **Operation Failure** - Inferno returns an HTTP error status with an
+    `OperationOutcome` rather than a response bundle.
+*   **Processing Errors** - Inferno returns a response bundle containing
+    business-level error entries.
 
 Each sub-group follows the same pattern:
 
 *   Select the sub-group and click 'RUN TESTS'.
-*   Optionally provide the responses Inferno should return. Which inputs appear
+*   Provide the responses Inferno should return. Which inputs appear
     depends on the sub-group being run, so running 'RUN ALL TESTS' at the level of
-    'PAS Workflows' presents all of them at once:
-    *   **Approval Workflow**: Claim approved response JSON
-    *   **Denial Workflow**: Claim denied response JSON
-    *   **Pended Workflow**: Claim pended response JSON, Claim updated
-        notification JSON, and Inquire approved response JSON
+    'PAS Scenarios' presents all of them at once:
+    *   **Approval Response**: Claim approved response JSON
+    *   **Denial Response**: Claim denied response JSON
+    *   **Pended Response**: Claim pended response JSON, Claim updated
+        notification JSON, and Client Notification Access Token
     *   **Claim Updates**: Initial claim response JSON, Add-item update response
         JSON, Modify-and-cancel update response JSON, and
         Cancel-entire-request update response JSON
     *   **Payer Modifications**: Claim modified response JSON
+    *   **Operation Failure**: Operation Failure OperationOutcome JSON and
+        Operation Failure HTTP Status Code
+    *   **Processing Errors**: Processing Error Response Bundle JSON
 *   When the 'User Action Required' dialog appears, submit a prior authorization
     request from the Health IT Module to the URL shown.
-*   Inferno validates the request bundle and the response bundle it returned, and
-    then asks you to attest that the Health IT Module displayed the decision
-    appropriately.
+*   Inferno asks you to attest that the Health IT Module displayed the decision
+    or error appropriately, and then validates the request and the response it
+    returned.
 
-These response inputs are all optional. When one is populated, Inferno modifies
+The Operation Failure OperationOutcome JSON and Processing Error Response Bundle
+JSON inputs are required, since Inferno cannot generate error responses. The other
+response inputs are optional. When one is populated, Inferno modifies
 the provided message before returning it, for example to apply current
 timestamps; see [Inferno modifications of tester-provided responses and
 notifications](https://github.com/inferno-framework/davinci-pas-test-kit/wiki/Client-Details#inferno-modifications-of-tester-provided-responses-and-notifications)
@@ -199,7 +211,7 @@ in the PAS Test Kit wiki for how those responses are built.
 
 Within the BR Provider system, you can trigger a prior-authorization request to
 Inferno in the following way:
-1. In Inferno, run group "3.1 Approval Workflow" without any changes to the inputs so
+1. In Inferno, run group "3.1 Approval Response" without any changes to the inputs so
    that the default mocked response response will be used. When the dialog appears
    indicating Inferno is ready to receive requests, return to the tab with the
    reference implementation.
@@ -218,7 +230,7 @@ Inferno in the following way:
    button on the next screen. The response should come back and be displayed
    as "Approved".
 1. Return to the Inferno tab, which will have begun to evaluate the prior authorization
-   interaction. A "User Action Required" dialog will appear asking for comfirmation
+   interaction. A "User Action Required" dialog will appear asking for confirmation
    that the order displayed has having prior authorization "approved". Click the
    appropriate answer based on what you saw in the reference implementation. This
    will complete the tests.
@@ -229,17 +241,26 @@ During these tests, the Health IT Module shows that it supports all PAS-defined
 profiles and the must support elements defined in them, both in the requests it
 sends and in the responses it can receive.
 
-*   Select '4 Must Support Elements' and click 'RUN TESTS'.
+*   Select '4 Must Support Elements' and click 'RUN TESTS'. This runs its two
+    sub-groups in order, '4.1 Demonstrate Must Support Coverage' and then
+    '4.2 Must Support Coverage'.
 *   Optionally provide sets of `$submit` and `$inquire` response bundles for
     Inferno to return. Because Inferno's generated responses do not include every
     must support element, providing responses that do is how a Health IT Module
     demonstrates it can receive them.
-*   When the 'User Action Required' dialog appears, submit additional `$submit`
-    and `$inquire` requests demonstrating coverage of any must support elements
-    not already exercised during the workflow tests.
+*   When the 'User Action Required' dialog appears during '4.1 Demonstrate Must
+    Support Coverage', submit additional `$submit` and `$inquire` requests
+    demonstrating coverage of any must support elements not already exercised
+    during the scenario tests.
+*   '4.2 Must Support Coverage' then evaluates the requests and responses.
 
-Inferno considers requests made during the PAS Workflows group as well, so only
+Inferno considers requests made during the PAS Scenarios group as well, so only
 profiles and elements not already demonstrated there need to be submitted here.
+
+'4.2 Must Support Coverage' can also be run on its own, for example after
+re-running a scenario sub-group, to re-evaluate coverage without repeating the
+requests made during '4.1 Demonstrate Must Support Coverage'. Re-running 4.1
+replaces the requests made during its previous run.
 
 Not every Health IT Module collects every must support element, and the PAS
 implementation guide does not require that they do. Three of the tests in this
@@ -264,19 +285,29 @@ elements, and the tester attests whether the Health IT Module collects that data
 The unobserved elements are also recorded as `info` messages on the test result,
 so they can be reviewed after the run.
 
-## Step 6: Perform Error Handling tests
+## Step 6: Perform Subscription Update and Deletion tests
 
-The error handling tests verify that the Health IT Module can appropriately
-handle prior authorization error responses from the payer. This group contains
-two sub-groups:
+The (g)(33) criterion requires support for subscriptions as specified in
+§ 170.315(j)(21), which includes the Subscription update and delete interactions
+as well as create. These tests verify that the Health IT Module can
+update and then delete the Subscription it created during 'Subscription Setup'.
 
-*   **Operation Failure** - Inferno returns an HTTP error status with an
-    `OperationOutcome` rather than a response bundle.
-*   **Processing Errors** - Inferno returns a response bundle containing
-    business-level error entries.
+Run this group after the PAS Scenarios and Must Support Elements groups. Inferno
+stops sending notifications for a Subscription once it has been updated or
+deleted.
 
-For each, submit a request when prompted, and then attest that the Health IT
-Module handled the error appropriately.
+*   Select '5 Subscription Update and Deletion' and click 'RUN TESTS'.
+*   When the 'User Action Required' dialog appears, send a `PUT` updating the
+    Subscription and then a `DELETE` removing it, to the URL shown in the dialog.
+    Inferno only accepts requests for the Subscription created during the most
+    recent run of 'Subscription Setup', and only while this dialog is active.
+*   Once both requests have been sent, click the link in the dialog to confirm.
+    Inferno then verifies that the update and delete requests are conformant.
+
+If this group is re-run, Inferno forgets the previous update and delete
+requests, including the deletion. If the Health IT Module cannot resume working
+with a Subscription it has deleted, re-run '2 Subscription Setup' to create a new
+one before re-running this group.
 
 ## Step 7: Review Authentication Interactions
 

@@ -148,6 +148,51 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
     end
   end
 
+  # The imported tests only work if the requests they wait for can reach this suite, so every endpoint
+  # the PAS client suite serves for SMART Backend Services is also served here, under the version
+  # prefix, by the same handler or a subclass of it.
+  describe 'endpoint parity with the PAS client suite' do
+    let(:prefix) { ONCCertificationG33TestKit::G33Options::PAS_V221_PREFIX }
+    # Only used by the UDAP client security option, which this suite does not offer
+    let(:udap_paths) { [UDAPSecurityTestKit::UDAP_DISCOVERY_PATH, UDAPSecurityTestKit::REGISTRATION_PATH] }
+
+    def routes_for(suite_id)
+      Inferno.routes.select { |route| route[:suite]&.id == suite_id && route[:method] != :options }
+    end
+
+    it 'serves every PAS client suite endpoint under the version prefix' do
+      g33_routes = routes_for(suite.id).to_h { |route| [[route[:method], route[:path]], route[:handler]] }
+      pas_routes = routes_for('davinci_pas_client_suite_v221').reject { |route| udap_paths.include?(route[:path]) }
+
+      missing = pas_routes.reject do |route|
+        handler = g33_routes[[route[:method], "#{prefix}#{route[:path]}"]]
+        next false if handler.nil?
+        next true unless route[:handler].is_a?(Class) && route[:handler].name
+
+        handler.is_a?(Class) && handler <= route[:handler]
+      end
+
+      expect(missing.map { |route| "#{route[:method]} #{route[:path]} (#{route[:handler]})" }).to be_empty
+    end
+
+    # Tests that send notifications build the Subscription urls in them from the suite id
+    it 'gives the imported tests this suite\'s prefixed suite id' do
+      suite_ids = imported_pas_tests.map { |test| test.new.suite_id }.uniq
+
+      expect(suite_ids).to eq([ONCCertificationG33TestKit::G33PASImport.prefixed_suite_id])
+    end
+  end
+
+  # The imported tests look validators up by name at run time, so a name the PAS client suite defines
+  # but this suite does not would only fail when the test runs.
+  describe 'validators' do
+    it 'defines every validator the PAS client suite defines' do
+      pas_suite = Inferno::Repositories::TestSuites.new.find('davinci_pas_client_suite_v221')
+
+      expect(pas_suite.fhir_validators.keys - suite.fhir_validators.keys).to be_empty
+    end
+  end
+
   describe 'optional exclusion' do
     it 'excludes every optional runnable, not just direct children of the imported groups' do
       optional = all_runnables.reject { |runnable| runnable == suite }.select(&:optional?)
@@ -214,16 +259,11 @@ RSpec.describe ONCCertificationG33TestKit::G33CertificationSuite do
       expect(mapped_requirement_ids - verified).to be_empty
     end
 
-    # The Subscription update and delete API tests are pending, so the requirements that only they
-    # would verify are the one remaining gap. Everything else is expected to be covered.
-    it 'leaves only the known gaps unverified' do
+    it 'leaves no certification requirement unverified' do
       verified = suite.all_verified_requirements
-      unverified = certification_requirement_ids - verified
 
-      expect(unverified).to contain_exactly(
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@6",
-        "#{ONCCertificationG33TestKit::G33Requirements::J21_SET}@7"
-      )
+      expect(certification_requirement_ids).to_not be_empty
+      expect(certification_requirement_ids - verified).to be_empty
     end
 
     # (g)(33)(ii) has no corresponding test in the PAS client or Subscriptions test kits, so this
