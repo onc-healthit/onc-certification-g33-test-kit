@@ -149,9 +149,10 @@ used together:
      deliberately malformed token requests that the simulated authorization
      server does not reject. Copy the `bearer_token` output from test "3.2.06".
   1. In a third tab, create a session for the "Da Vinci PAS Server Suite v2.2.1"
-     with no preset selected. The preset bundled with that suite authenticates
-     using a session-specific URL path, which this suite does not support.
-     Configure it with:
+     and apply its "Run Against the PAS Client Suite" preset, which provides the
+     request payloads. The preset targets the PAS Client Suite with a
+     session-specific URL path, which this suite does not support, so then
+     replace these values:
      - FHIR Server Endpoint URL:
        `<inferno-base>/custom/g33_certification/pas_v221/fhir`. Stop at `/fhir`;
        the suite appends `/Subscription` and `/Claim/$submit` itself.
@@ -159,13 +160,12 @@ used together:
        copied from step 2 in its Access Token field. The server suite sends it
        on every request, and the (g)(33) suite reads the Client Id from it to
        find the session.
-     - Notification Access Token: any value, such as `demo_execution`. This is
-       not the token from step 2. The server suite puts it in the Subscription's
-       `channel.header` so that the notifications the (g)(33) suite sends back
-       reach the server suite session. Leave the (g)(33) "Client Notification
-       Access Token" input blank, since it would override that header.
-     - Request payloads for the group being run, which the PAS Test Kit's own
-       server preset provides.
+
+     Keep the preset's Notification Access Token (`demo_execution`), or use any
+     other value. It is not the token from step 2: the server suite puts it in
+     the Subscription's `channel.header` so that the notifications the (g)(33)
+     suite sends back reach the server suite session. Leave the (g)(33) "Client
+     Notification Access Token" input blank, since it would override that header.
   1. Start the (g)(33) group under test and leave it on its "User Action
      Required" dialog, then run the corresponding server suite group. The
      simulated payer rejects requests whose client id is not tied to a session
