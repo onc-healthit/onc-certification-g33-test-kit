@@ -17,7 +17,7 @@ module ONCCertificationG33TestKit
       for Health Level 7 (HL7®) Fast Healthcare Interoperability Resources
       (FHIR®) clients seeking to meet the requirements of the
       [prior authorization submission criterion § 170.315(g)(33)](https://healthit.gov/test-method/provider-prior-authorization-api-prior-authorization-support)
-      in the ONC Certification Program.
+      in the ONC Health IT Certification Program.
 
       **DISCLAIMER**: this test kit is currently a draft and not ready for ONC certification purposes.
 
@@ -88,6 +88,24 @@ module ONCCertificationG33TestKit
                      value: G33Options::CLIENT_TYPE
                    }
                  ]
+    suite_option :us_core_version,
+                 title: 'US Core Version',
+                 description: 'The US Core version whose profiles are used to validate supporting ' \
+                              'information resources that have no PAS profile.',
+                 list_options: [
+                   {
+                     label: 'US Core 3.1.1',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_3_1_1
+                   },
+                   {
+                     label: 'US Core 6.1.0',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_6_1_0
+                   },
+                   {
+                     label: 'US Core 7.0.0',
+                     value: DaVinciPASTestKit::PASConstants::US_CORE_VERSION_7_0_0
+                   }
+                 ]
 
     requirement_sets(
       {
@@ -104,12 +122,16 @@ module ONCCertificationG33TestKit
       {
         identifier: "hl7.fhir.us.davinci-pas_#{G33Options::PAS_V221}",
         title: "Da Vinci Prior Authorization Support (PAS) v#{G33Options::PAS_V221}",
-        actor: 'PAS Client'
+        actor: 'PAS Client',
+        requirements: 'conf-7,conf-8,conf-14,conf-15,conf-16-A,priv-1-A,priv-1-B,prof-1,prof-2,prof-3,prof-4,prof-5,' \
+                      'prof-6,prof-7,prof-8,prof-9,prof-10,spec-1,spec-4,spec-8,spec-62,spec-65,spec-66,spec-67,' \
+                      'spec-68,spec-69,spec-70,spec-71,spec-72,use-5,hrex-conf-1,hrex-conf-2'
       },
       {
         identifier: 'hl7.fhir.uv.subscriptions_1.1.0',
         title: 'Subscriptions R5 Backport IG',
-        actor: 'Client'
+        actor: 'Client',
+        requirements: '23,24,64,68,71,76,81,82,96,116'
       }
     )
 
@@ -119,6 +141,22 @@ module ONCCertificationG33TestKit
       validation_context do
         txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
         displayWarnings false
+      end
+
+      exclude_message do |message|
+        # Messages expected of the form `<ResourceType>: <FHIRPath>: <message>`
+        # We strip `<ResourceType>: <FHIRPath>: ` for the sake of matching
+        DaVinciPASTestKit::V221_SUPPRESSED_MESSAGES.match?(message.message.sub(/\A\S+: \S+: /, ''))
+      end
+    end
+
+    fhir_resource_validator :no_custom_extensions do
+      igs(G33Options::PAS_V221_IG_PACKAGE, G33Options::US_CORE_IG_PACKAGE)
+
+      validation_context do
+        txServer ENV.fetch('G33_TERMINOLOGY_SERVER', 'https://tx.fhir.org/r4')
+        displayWarnings false
+        extensions [] # no extensions not in the spec
       end
 
       exclude_message do |message|
@@ -212,7 +250,7 @@ module ONCCertificationG33TestKit
     end
 
     # SMART Backend Services is the only authentication approach used
-    CLIENT_ID_REQUIERED = { inputs: { client_id: { optional: false } } }.freeze
+    CLIENT_ID_REQUIRED = { inputs: { client_id: { optional: false } } }.freeze
 
     # Imports a group from the PAS v2.2.1 client suite and tags it with that version, so the
     # :pas_version suite option selects between versions rather than showing every version's groups
@@ -233,28 +271,28 @@ module ONCCertificationG33TestKit
     import_v221!(
       group(from: :pas_client_v221_subscription_setup, id: :g33_pas_client_v221_subscription_setup) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_workflows, id: :g33_pas_client_v221_workflows) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
       group(from: :pas_client_v221_must_support, id: :g33_pas_client_v221_must_support) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 
     import_v221!(
-      group(from: :pas_client_v221_error_handling_group, id: :g33_pas_client_v221_error_handling) do
+      group(from: :pas_client_v221_subscription_update_delete, id: :g33_pas_client_v221_subscription_update_delete) do
         DaVinciPASTestKit::PASClientOptions.recursive_remove_input(self, :session_url_path)
-        config(CLIENT_ID_REQUIERED)
+        config(CLIENT_ID_REQUIRED)
       end
     )
 

@@ -57,7 +57,7 @@ to learn the basics of RSpec as well.
 
 The ONC (g)(33) Certification Criterion requires the implementation of several
 FHIR Implementation Guides, while providing guidance on how to support these
-test kits to accomplish the specific requirements of the certification
+guides to accomplish the specific requirements of the certification
 criterion. In order to facilitate testing systems independently of the (g)(33)
 Certification requirements, each of these Implementation Guides also has a
 stand-alone test kit. The (g)(33) Test Kit then imports tests defined in these
@@ -141,10 +141,11 @@ used together:
        default keys are used.
 
      The group runs as a unit, so its individual tests cannot be run on their
-     own. Only the last two are expected to pass here: "3.2.01" checks TLS and
-     fails when running locally over HTTP, and "3.2.02" through "3.2.04" send
-     deliberately malformed token requests that the simulated authorization
-     server does not reject. Copy the `bearer_token` output from test "3.2.06".
+     own. Only the last two tests in group 3.2 are expected to pass here:
+     "3.2.01" checks TLS and fails when running locally over HTTP, and "3.2.02"
+     through "3.2.04" send deliberately malformed token requests that the
+     simulated authorization server does not reject. Copy the `bearer_token`
+     output from test "3.2.06".
   1. In a third tab, create a session for the "Da Vinci PAS Server Suite v2.2.1"
      with no preset selected. The preset bundled with that suite authenticates
      using a session-specific URL path, which this suite does not support.

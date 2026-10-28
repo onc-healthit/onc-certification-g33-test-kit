@@ -3,10 +3,6 @@
 The ONC Certification (g)(33) Prior Authorization Support API Test Kit is an [Inferno](https://github.com/inferno-framework/inferno-core)
 Test Kit for testing Health IT systems against the § 170.315(g)(33) criterion.
 
-> **Note:** This test kit is an initial scaffold. It currently contains only a
-> placeholder suite with a US Core version selector and a single passing test.
-> Real test content will be added in future releases.
-
 ## Getting Started
 
 The quickest way to run this test kit locally is with [Docker](https://www.docker.com/).
@@ -38,10 +34,9 @@ This test kit includes examples for two tools that can be used to verify Inferno
   if this test kit is committed to a Github repository.
 - Execution scripts: test kit code is verified against previous results in a deployed Inferno
   environment including the associated services. See [CI/CD Usage](https://inferno-framework.github.io/docs/ci-cd-usage.html)
-  in the Inferno documentation for more details on creating execution scripts. Examples of
-  these can be found in the `execution_scripts` directory. Those examples and any other defined in that directory
-  will be executed by the run_inferno_execution_scripts.yml workflow (`.github/workflows/run_inferno_execution_scripts.yml`)
-  if this test kit is committed to a Github repository.
+  in the Inferno documentation for more details on creating execution scripts. Scripts defined in that the
+  `execution_scripts` directory will be executed by the run_inferno_execution_scripts.yml workflow (`.github/workflows/run_inferno_execution_scripts.yml`)
+  if this test kit is committed to a GitHub repository.
 
 ## Example Inferno Test Kits
 
